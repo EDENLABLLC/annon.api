@@ -9,6 +9,8 @@ defmodule Annon.Plugins.UARestriction.SettingsValidator do
     validate_with_json_schema(changeset, :settings, settings_validation_schema())
   end
 
+  # TODO: a least one el. per values array
+  # TODO: extract into meta
   def settings_validation_schema do
     %{
       "type" => "object",
