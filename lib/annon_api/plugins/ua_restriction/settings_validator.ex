@@ -22,13 +22,37 @@ defmodule Annon.Plugins.UARestriction.SettingsValidator do
         "whitelist" => %{
           "type" => "array",
           "items" => %{
-            "type" => "string"
+            "type" => "object",
+            "properties" => %{
+              "name" => %{
+                "type" => "string"
+              },
+              "values" => %{
+                "type" => "array",
+                "items" => %{
+                  "type" => "string"
+                }
+              }
+            },
+            "additionalProperties" => false
           }
         },
         "blacklist" => %{
           "type" => "array",
           "items" => %{
-            "type" => "string"
+            "type" => "object",
+            "properties" => %{
+              "name" => %{
+                "type" => "string"
+              },
+              "values" => %{
+                "type" => "array",
+                "items" => %{
+                  "type" => "string"
+                }
+              }
+            },
+            "additionalProperties" => false
           }
         }
       }

@@ -8,20 +8,40 @@ defmodule Annon.Plugins.UARestrictionTest do
   describe "settings_validation_schema/3" do
     test "accepts valid config" do
       changeset = %Ecto.Changeset{valid?: true, changes: %{settings: %{
-        "blacklist" => [@user_agent],
-        "whitelist" => [@user_agent]
+        "blacklist" => [
+          %{
+            "name" => "user_agent",
+            "values" => [@user_agent]
+          }
+        ],
+        "whitelist" => [
+          %{
+            "name" => "user_agent",
+            "values" => [@user_agent]
+          }
+        ]
       }}}
 
       assert %Ecto.Changeset{valid?: true} = UARestriction.validate_settings(changeset)
 
       changeset = %Ecto.Changeset{valid?: true, changes: %{settings: %{
-        "whitelist" => [@user_agent]
+        "whitelist" => [
+          %{
+            "name" => "user_agent",
+            "values" => [@user_agent]
+          }
+        ]
       }}}
 
       assert %Ecto.Changeset{valid?: true} = UARestriction.validate_settings(changeset)
 
       changeset = %Ecto.Changeset{valid?: true, changes: %{settings: %{
-        "blacklist" => [@user_agent]
+        "blacklist" => [
+          %{
+            "name" => "user_agent",
+            "values" => [@user_agent]
+          }
+        ]
       }}}
 
       assert %Ecto.Changeset{valid?: true} = UARestriction.validate_settings(changeset)
