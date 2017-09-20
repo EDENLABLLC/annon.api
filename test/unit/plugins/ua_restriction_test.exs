@@ -106,7 +106,7 @@ defmodule Annon.Plugins.UARestrictionTest do
         "whitelist" => [
           %{
             "name" => "user-agent",
-            "values" => ["Firefox"]
+            "values" => ["Chrome"]
           }
         ]
       }
@@ -114,13 +114,13 @@ defmodule Annon.Plugins.UARestrictionTest do
       conn = Conn.put_req_header(conn, "user-agent", @user_agent)
       assert conn == UARestriction.execute(conn, nil, settings)
 
-      # settings = %{
-      #   "blacklist" => ["Moz.*"],
-      #   "whitelist" => ["Chr.*"],
-      # }
+      settings = %{
+        "blacklist" => ["Moz.*"],
+        "whitelist" => ["Chr.*"],
+      }
 
-      # conn = Conn.put_req_header(conn, "user-agent", @user_agent)
-      # assert conn == UARestriction.execute(conn, nil, settings)
+      conn = Conn.put_req_header(conn, "user-agent", @user_agent)
+      assert conn == UARestriction.execute(conn, nil, settings)
     end
   end
 end
