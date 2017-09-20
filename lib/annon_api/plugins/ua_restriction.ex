@@ -13,14 +13,10 @@ defmodule Annon.Plugins.UARestriction do
   defdelegate settings_validation_schema(), to: Annon.Plugins.UARestriction.SettingsValidator
 
   def execute(%Conn{} = conn, _request, settings) do
-    with true <- check_headers(settings, conn.headers) do
+    if check_headers(settings, conn.req_headers) do
       conn
     else
-      :error ->
-        Logger.warn("Request does not contain User-Agent header, User Agent restrictions won't be applied")
-        conn
-      false ->
-        render_forbidden(conn)
+      render_forbidden(conn)
     end
   end
 
@@ -42,15 +38,13 @@ defmodule Annon.Plugins.UARestriction do
 
   defp header_matches?(listed_headers, headers) do
     for %{"name" => listed_name, "values" => listed_values} <- listed_headers,
-        {name, values} <- headers,
+        {name, value} <- headers,
         name == listed_name
     do
       Enum.any? listed_values, fn regex ->
-        Enum.any? values, fn value ->
-          regex
-          |> Regex.compile!()
-          |> Regex.match?(value)
-        end
+        regex
+        |> Regex.compile!()
+        |> Regex.match?(value)
       end
     end
   end
