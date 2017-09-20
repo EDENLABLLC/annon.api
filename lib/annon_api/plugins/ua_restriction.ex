@@ -13,8 +13,7 @@ defmodule Annon.Plugins.UARestriction do
   defdelegate settings_validation_schema(), to: Annon.Plugins.UARestriction.SettingsValidator
 
   def execute(%Conn{} = conn, _request, settings) do
-    with {:ok, user_agent} <- fetch_user_agent(conn),
-         true <- check_user_agent(settings, user_agent) do
+    with true <- check_headers(settings, conn.headers) do
       conn
     else
       :error ->
@@ -25,33 +24,35 @@ defmodule Annon.Plugins.UARestriction do
     end
   end
 
-  defp fetch_user_agent(conn) do
-    case Plug.Conn.get_req_header(conn, "user-agent") do
-      [] -> :error
-      [user_agent | _] -> {:ok, user_agent}
-    end
-  end
-
-  defp check_user_agent(settings, user_agent) do
-    blacklisted = blacklisted?(settings, user_agent)
-    whitelisted = whitelisted?(settings, user_agent)
+  defp check_headers(settings, headers) do
+    blacklisted = blacklisted?(settings, headers)
+    whitelisted = whitelisted?(settings, headers)
     whitelisted || (whitelisted === nil && !blacklisted)
   end
 
-  defp whitelisted?(%{"whitelist" => list}, user_agent),
-    do: Enum.any?(list, &user_agent_matches?(&1, user_agent))
+  defp whitelisted?(%{"whitelist" => list}, headers),
+    do: Enum.all?(header_matches?(list, headers), &(&1 == true))
   defp whitelisted?(_plugin, _user_agent),
     do: nil
 
-  defp blacklisted?(%{"blacklist" => list}, user_agent),
-    do: Enum.any?(list, &user_agent_matches?(&1, user_agent))
+  defp blacklisted?(%{"blacklist" => list}, headers),
+    do: Enum.all?(header_matches?(list, headers), &(&1 == true))
   defp blacklisted?(_plugin, _user_agent),
     do: nil
 
-  defp user_agent_matches?(regex, user_agent) do
-    regex
-    |> Regex.compile!()
-    |> Regex.match?(user_agent)
+  defp header_matches?(listed_headers, headers) do
+    for %{"name" => listed_name, "values" => listed_values} <- listed_headers,
+        {name, values} <- headers,
+        name == listed_name
+    do
+      Enum.any? listed_values, fn regex ->
+        Enum.any? values, fn value ->
+          regex
+          |> Regex.compile!()
+          |> Regex.match?(value)
+        end
+      end
+    end
   end
 
   def render_forbidden(conn) do
