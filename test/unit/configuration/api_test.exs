@@ -43,42 +43,47 @@ defmodule Annon.Configuration.APITest do
     end
 
     test "paginates results" do
-      api1 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
-      api2 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
-      api3 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
-      api4 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
-      api5 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
+      api1_id = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate()).id
+      api2_id = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate()).id
+      api3_id = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate()).id
+      api4_id = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate()).id
+      api5_id = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate()).id
 
-      assert {[^api1, ^api2, ^api3, ^api4, ^api5], _paging} =
-        API.list_apis(%{}, %Paging{limit: nil})
-      assert {[^api1], _paging} =
-        API.list_apis(%{}, %Paging{limit: 1})
-      assert {[^api1, ^api2], _paging} =
-        API.list_apis(%{}, %Paging{limit: 2})
+      {page, _paging} = API.list_apis(%{}, %Paging{limit: nil})
+      assert [^api1_id, ^api2_id, ^api3_id, ^api4_id, ^api5_id] = Enum.map(page, &(&1.id))
 
-      assert {[^api2, ^api3], _paging} =
-        API.list_apis(%{}, %Paging{limit: 2, cursors: %Cursors{starting_after: api1.id}})
-      assert {[^api3, ^api4], _paging} =
-        API.list_apis(%{}, %Paging{limit: 2, cursors: %Cursors{ending_before: api5.id}})
+      {page, _paging} = API.list_apis(%{}, %Paging{limit: 1})
+      assert [^api1_id] = Enum.map(page, &(&1.id))
+
+      {page, _paging} = API.list_apis(%{}, %Paging{limit: 2})
+      assert [^api1_id, ^api2_id] = Enum.map(page, &(&1.id))
+
+      {page, _paging} = API.list_apis(%{}, %Paging{limit: 2, cursors: %Cursors{starting_after: api1_id}})
+      assert [^api2_id, ^api3_id] = Enum.map(page, &(&1.id))
+
+      {page, _paging} = API.list_apis(%{}, %Paging{limit: 2, cursors: %Cursors{ending_before: api5_id}})
+      assert [^api3_id, ^api4_id] = Enum.map(page, &(&1.id))
     end
 
     test "paginates with filters" do
-      api1 = ConfigurationFactory.insert(:api, name: "one")
-      api2 = ConfigurationFactory.insert(:api, name: "one two")
-      api3 = ConfigurationFactory.insert(:api, name: "one three")
-      api4 = ConfigurationFactory.insert(:api, name: "one four")
+      api1_id = ConfigurationFactory.insert(:api, name: "one").id
+      api2_id = ConfigurationFactory.insert(:api, name: "one two").id
+      api3_id = ConfigurationFactory.insert(:api, name: "one three").id
+      api4_id = ConfigurationFactory.insert(:api, name: "one four").id
 
-      assert {[^api2, ^api3], _paging} =
+      {page, _paging} =
         API.list_apis(
           %{"name" => "one"},
-          %Paging{limit: 2, cursors: %Cursors{starting_after: api1.id}}
+          %Paging{limit: 2, cursors: %Cursors{starting_after: api1_id}}
         )
+      assert [^api2_id, ^api3_id] = Enum.map(page, &(&1.id))
 
-      assert {[^api2, ^api3], _paging} =
+      {page, _paging} =
         API.list_apis(
           %{"name" => "one"},
-          %Paging{limit: 2, cursors: %Cursors{ending_before: api4.id}}
+          %Paging{limit: 2, cursors: %Cursors{ending_before: api4_id}}
         )
+      assert [^api2_id, ^api3_id] = Enum.map(page, &(&1.id))
     end
   end
 
@@ -409,6 +414,48 @@ defmodule Annon.Configuration.APITest do
       }} = API.find_api("http", "POST", "example.com", 80, "/my_path/random_id")
 
       assert api_id == api1.id
+      assert length(plugins) == 1
+    end
+
+    test "ignores methods when matches are prioritized" do
+      api2 = ConfigurationFactory.insert(:api,
+        matching_priority: 1,
+        request: ConfigurationFactory.build(:api_request, %{
+          scheme: "http",
+          methods: ["POST"],
+          host: "example.com",
+          port: 80,
+          path: "/my_path"
+        }
+      ))
+      ConfigurationFactory.insert(:proxy_plugin, api_id: api2.id)
+
+      api1 = ConfigurationFactory.insert(:api,
+        matching_priority: 2,
+        request: ConfigurationFactory.build(:api_request, %{
+          scheme: "http",
+          methods: ["GET"],
+          host: "example.com",
+          port: 80,
+          path: "/my_path/_%"
+        }
+      ))
+      ConfigurationFactory.insert(:proxy_plugin, api_id: api1.id)
+
+      assert {:ok, %APISchema{
+        id: api_id,
+        plugins: plugins
+      }} = API.find_api("http", "POST", "example.com", 80, "/my_path/")
+
+      assert api_id == api2.id
+      assert length(plugins) == 1
+
+      assert {:ok, %APISchema{
+        id: api_id,
+        plugins: plugins
+      }} = API.find_api("http", "POST", "example.com", 80, "/my_path/random_id")
+
+      assert api_id == api2.id
       assert length(plugins) == 1
     end
   end
