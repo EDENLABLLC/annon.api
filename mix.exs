@@ -1,14 +1,14 @@
 defmodule Annon.Mixfile do
   use Mix.Project
 
-  @version "0.13.0"
+  @version "0.12.5"
 
   def project do
     [app: :annon_api,
      description: "Configurable API gateway that acts as a reverse proxy with a plugin system.",
      package: package(),
      version: @version,
-     elixir: "~> 1.5",
+     elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -57,17 +57,17 @@ defmodule Annon.Mixfile do
      {:cowboy, ">= 0.0.0"},
      {:postgrex, "~> 0.13"},
      {:ecto, "~> 2.1"},
-     {:poison, "~> 3.1"}, # TODO: Try jiffy for performance boost
+     {:poison, "~> 3.1", override: true}, # TODO: Try jiffy for performance boost
      {:joken, "~> 1.4"},
      {:nex_json_schema, "~> 0.7.0"},
-     {:hackney, "~> 1.9"},
      {:httpoison, ">= 0.0.0"},
      {:eview,  ">= 0.0.0"},
-     {:ecto_paging, "~> 0.8.3"},
+     {:ecto_paging, ">= 0.0.0"},
      {:phoenix_ecto, ">= 0.0.0"},
      {:logger_json, "~> 0.5.0"},
      {:cors_plug, "~> 1.1"},
      {:dogstat, "~> 0.1.0"},
+     {:cidr, ">= 1.1.0"},
      {:ex_machina, ">= 1.0.0", only: [:dev, :test]},
      {:dogma, ">= 0.0.0", only: [:dev, :test]},
      {:benchfella, "~> 0.3", only: [:dev, :test]},

@@ -7,31 +7,34 @@ services:
   - docker
   - postgresql
 addons:
-  postgresql: "9.6"
+  postgresql: "9.5"
   hosts:
     - httpbin.org
-  apt:
-    packages:
-      - docker-ce
 elixir:
-  - 1.5.1
+  - 1.4.5
 otp_release:
-  - 20.0
+  - 19.3
+notifications:
+  slack: 
+    rooms:
+      - secure: "j6bC+QrahfmM8yh8YXaITJMJYX7XtvtE6T2vJLKU4nDrYMc02i8RHAeYD4bid91412DVMgBymYyKHs/5PVLBV5U7y465Uyu1F5cY+SDk1E8NfaY16l2lq3ptUIaOCxZRIC4pKg2CcR5/3pRuT+2j389iSTTMHNnncozTqDY2hLhCqx1agNpSMqtMVTq7ihZqm7dfq5BRR98RMT3Y8yfXY0rpk78gs7lMCCqEqXNysdQ4CaEE8r8syj2nHtAqf78JUIVgaItp257zRhgjEUOyRdA4Z197t4uoiOAeyXI6sChW5dlpDDLsxiXU6Dt3hVSjE+iud5MxbbeJimK9MhpCvnqK4W4B+LKItygmyEYW4eWdHrqA7GIjD4UfH5DCSKldHiOPtP8EnuQURxectHw9s3Ddx+wcxrObawBj7+hTGd04ZgBh6HdvJiJYW1ga/H6lQzbP9puxsArsUuWl2ZGdNjkg5W4O/0X3PFg/eL1T3QlBK4PLBcYzpfArp6af+iwQ3BBtQwOZ5F3WwFOD/DKqnJ7asbQfDUtBni0q8XE0KzqHg2eVfRye/c0NRE8h+20i+VqAyW3yqiZCKctCAbDcBOBRaSwxVZoKgUKhdHwGRrJcl0YMNBmgmQgNHqFO62FcBZrjxOBIZGpOHDgoQknaVXDxzNSyeRyh3pr3tl23Qoo="
+    on_success: always
 env:
   global:
+    - Chart=gateway
     - MIX_ENV=test
     - REQUIRE_VERSION_TAGS="true"
     - TRUNK_BRANCH="master"
     # Docker Hub token
-    - DOCKER_HUB_ACCOUNT=nebo15
-    - secure: "e7quIjgao/1Fc+tgjml23ogsbyxh35R+Vz4JDA5AA8PHLDyyogZdbl1GFVBMhio8SPzbWt+btW6LjNS0dHl6dxGnLZxCxTnyOgLUNBGNPKUmDj4T6YWSDmCy6c+RxErYzRzfLhhgQoLCpPDDPKkDeuHpCBocSUm0zpGTt9RQLydeiwmLaJtMu3/415HfD19PiY/TWvhOHHk1gpTXWD+1mUQLB/aOAgC1s9P11pcLLibjm6xr363fXoOSKp55e+8yI3lSN4UpH+ec5t1ubwDxrhOUrng/wNSxqwyLKG0Ovh2xUStpTPbVXnfx4AGm0KkpZcg90PpDeCvNPKGCzzspdrOvXD5IHTFqdUmqwQmHIlplF8PLu9AVV+9A3v86zndf/W8tGtBBolBqGKhCFr/ID0z3gN1K6YRQMK6rv1rVfrnmarma9Iy/wEn0qHk9hBYXxDcgM2RPdPmF7RTK4D4FvGNMRG6SFCd375ulaKkukIxjemKtjicpBggWZQP8YC7X95bptCG+1eDzNJdLnYE0jH3foX+19kM1bNCX+owKRkm9U+i2QfUNZPZS00aXXf9/1FT7fV1uMR+ZbC7uvxgc0ZKzyX5rauvs1qtHYR22dpgbUVXwZ91LSQizay9lWgGcz6B8JXYw/fteDPR97TLW/YPzvuOdGYzmyv58nlPttuY="
+    - DOCKER_HUB_ACCOUNT=edenlabllc
+    - secure: "KCXY/H1KL3xUQJCLpE6M3rJBV2JI2Z9XzRv5PYP+iKSYntkx/m9EGVY+4UHKvzTU19Lq1I10V8Q5UsGkpbuPHeKdCeRF0F8BscQqmav85Q/NKPNSKKxq6SFyGVLr+lmER3BQkNEUMIQWWHo8chHrvwRZoAXSjDp8OXWt5nWr78hQXM3+lQZvy0OXB44bsAej4HR01vol2V3BR1by87SzLnJLjQRZbl9eWQ8L31/dvp7GHnj1Kle+dek4Kq1EOugfAnqJKSVuECbllHwF+f8kGN0ZI9XCrHxhcQF0tcAwisDbA9xrXQh/MiNbBA+YTIbktZV4477CE2oCBaULzptifZkUgC+004bxOTOrTBwx/nMuIBwhbn5TimDdH6yxLmipYnweO2G3PbE46ccfRnvl1zxpEsTm+GfOTMAT1Y8HKGNYdLO2c24BCdzd15sRA06HvbRJ1xJBAoRZxz8jY4gl/PF6zGAwzgAOR2EqAglifmm7rIj5vRy0v1Bf3FNLv2nKye4lurDQ5f/CZPoJLz5NkdLu1t+XT/7lT+tFftJu7EZEulaoIcCk38lIWToPBU/jMXcOiMlhOa72BpFptqvtf4W0x8cp60gyCz85aMHCn/q8TZDnMkEGTqBupEcp4c8Z9//LRFRKEh8RwbajxGO0CAXSnVY9jOzYnEGNlFMasOw="
     # GitHub token
-    - secure: "gmTS+DuyJ18k6kcWDOrzCFbBe05VZA5DzQqLzjnHYxNSZA+y4+vpIUH4xkN+JjEuYo2Jreg4Kz8NO0wP3gNROQrn3gYTdYXKQ8twJLsZ50IASnZQRLsDmuNIJsZcSgK8b27QNJYmfK3frDGlUubEws3POW3lo/uBfi4AzydoPhzo7HNNACMqFt7p1e5ndHaXmO2W3/DNkW/4NnpTA7SRcqMcykTIj7IzPOG+WVbGKxfUMuDCuabfMxeC5n5vROnbtoPoPrTR+7DPC/tKYnItwo4jvA08noMVrE7ziHrwyb7bPZs+ncfdwdS6LwIPwxGI7d+cUO9WOFdRzFH44xvY9lvRo3liMN800XZPJT6HFxf4GkQQuYW/trHjTYL7woHQmtwpGfBa1WFfDbSMSApk0YBUj0n0q0nMoV/9o7W8WIT0kjiCPbve0KUQYTHyqY5jcZS8hpZfno0+aVDTlq1jkEYdRb2wxBJXL/nDg5Z2reXsfEuAG4CTnzRkA8vv5otJXZrPmutNhHKg/+AdMsZAO5OsiCosqK9ouAypKoHhnYEigXD+kfMeWKpq4weDSfK6pYNoziMKYdsKKXnMg5/rWM9E3TpTUYgeiLFaHzgw7ll7fS8ra7jntC9Me2E5qqu3MjoEIErLE+k1IXw0EueQzX1BTVG2XqgUxTqYOIcuvYQ="
-branches:
+    - secure: "oBqeNe/1qz5ognVswpex5VX3MWdBD0xPMYHiXQ8IU0lYooYvAR6WG4yG4UswysVzWv4SxKD/3SGpww8kYezmnx4wBbmKE7kwR+/uAFuP5y3S6QJ4ArBJwhu6XCq8UkQYZiyAwRztBcgey1WiJCuMt3JE8Pbx1J6BYPl+XO0orgGwPtCipLpF2fvqXHoWQYlKE06CRrmsTGakJOXhni5TmRVnRydt8a/4CdPbrQrGAaQ0l56KSXMHFMhKQ0KDTVRK3hlqk1zcjxSNhYhEgSLqU9TlG5MvtGOfbSLqqna8Feq+adjVvYYSqSfNDAcOCk8AWTUrOJgHbi48T6OWA1msf2LQ98nLsIDQuQgVp+2d0lK2PDaP5I6jcaeeKTsmvfsZ6YIs2r+Ulv5HW5Y9pqTd+pQNbjUaoS92zqRxNfq9vQ1jk3t9SXnHiHmsdqzw34fO2dnX3loPQuKw0zuRGmIBWw2AyYdvDolKmQveBm9BI/gphudU6iseEGO/BY9To3ocKwQSNVd5SDoQ5buv+h6jrMz3qHLAhCvaErbP+Kl0VRaLMcvHMjo+/mRXuvtTHNEXBeP0ZqCVUUeVrYvgysbMghACAi3wwS/Phadfnzsi5c2FXswz+gdBlW9tgagEMREzJDxxKLWdJo0yUg5ApJSsT+5KQj6dXLIDub83i2A3mL0="
   # Releases are generated automatically, stop infinite build loop
   except:
     - /^[0-9]*\.[0-9]*\.[0-9]*/
 before_install:
+  - openssl aes-256-cbc -K $encrypted_8dd9ff6971ec_key -iv $encrypted_8dd9ff6971ec_iv -in eHealth-eef414faa06b.json.enc -out eHealth-eef414faa06b.json -d
   # Expose DB to Docker container
   - sudo /bin/bash ./bin/ci/init-db.sh
   # Run HTTPBin locally
@@ -46,22 +49,16 @@ before_script:
   - source ./bin/ci/release/fetch-changelog.sh
 script:
   # Increment version in mix.exs
-  - ./bin/ci/release/put-source-version.sh
+  - ./bin/ci/release/put-source-version.sh || travis_terminate 1
   # Run all tests except pending ones
-  - mix test --exclude pending --trace
-  # Submit code coverage report to Coveralls
-  - mix coveralls.travis --exclude pending
-  # Run static code analysis
-  - mix credo -a
-  # Check code style
-  - mix dogma
+  - ./bin/mix_tests.sh || travis_terminate 1
   # Build Docker container
-  - ./bin/ci/release/build-container.sh
+  - ./bin/ci/release/build-container.sh || travis_terminate 1
   # Initialize DB for Docker container
   - source .env; PGPASSWORD="${DB_PASSWORD}"; psql -U ${DB_USER} -w -c"CREATE DATABASE ${DB_NAME}"
   # Run Docker container
   - sudo ./bin/ci/release/start-container.sh -a '--add-host=httpbin.org:$HOST_IP'
-  - sleep 10
+  - sleep 5
   - docker ps
   - RUNNING_CONTAINERS=`docker ps | wc -l`;
     if [ "${RUNNING_CONTAINERS//[[:space:]]/}" == "2" ]; then
@@ -70,12 +67,10 @@ script:
       exit 1;
     fi;
   # Run acceptance tests on Docker container
-  - ./test/sanity-test.sh
-after_failure:
-  - docker logs httpbin --details --since 5h
-  - docker logs annon_api --details --since 5h
+  - ./test/sanity-test.sh || travis_terminate 1
+    # Submit Docker container to Docker Hub and create GitHub Release by pushing tag with changelog
+  - ./bin/ci/release/push-changes.sh || travis_terminate 1
+  - sudo ./bin/deploy.sh || travis_terminate 1
 after_success:
   # Rebuild docs
   - "mix docs --output docs"
-  # Submit Docker container to Docker Hub and create GitHub Release by pushing tag with changelog
-  - ./bin/ci/release/push-changes.sh
