@@ -54,7 +54,10 @@ defmodule Annon.Plugins.ACL do
   defp validate_broker_scope(_scope, nil),
    do: :ok
   defp validate_broker_scope(scope, broker_scope) do
-    validate_scope(scope, broker_scope)
+    case validate_scope(scope, broker_scope) do
+      :ok -> :ok
+      {:error, :forbidden, _} -> {:error, :forbidden, :broker}
+    end
   end
 
   defp validate_scope(%{"scopes" => required_scopes}, []),
@@ -95,6 +98,9 @@ defmodule Annon.Plugins.ACL do
   defp get_message(missing_scopes) when is_list(missing_scopes) do
     missing_scopes = Enum.join(missing_scopes, ", ")
     "Your scope does not allow to access this resource. Missing allowances: #{missing_scopes}"
+  end
+  defp get_message(:broker) do
+    "Scope is not allowed by broker"
   end
 
   defp get_rules(nil),
