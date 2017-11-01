@@ -25,8 +25,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
 
   describe "Proxy Plugin" do
     test "create", %{api_id: api_id} do
-      proxy = :proxy_plugin
-      |> build_factory_params(%{settings: %{host: "host.com"}})
+      proxy = build_factory_params(:proxy_plugin, %{settings: %{host: "host.com"}})
 
       "apis/#{api_id}/plugins/proxy"
       |> put_management_url()
@@ -72,26 +71,26 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
 
   describe "proxy settings validator" do
     test "allows only host and port", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock()
+      create_proxy_to_mock(api_id)
 
-      assert %{"request" => %{"uri" => uri}} = api_path
-      |> put_public_url()
-      |> get!()
-      |> get_body()
-      |> get_mock_response()
+      assert %{"request" => %{"uri" => uri}} =
+        api_path
+        |> put_public_url()
+        |> get!()
+        |> get_body()
+        |> get_mock_response()
 
       assert api_path == uri
     end
 
     test "validates data", %{api_id: api_id} do
-      params = :proxy_plugin
-      |> build_factory_params(%{settings: %{
-        path: 123,
-        scheme: "httpd",
-        strip_api_path: "hello",
-        additional_headers: "string"
-      }})
+      params =
+        build_factory_params(:proxy_plugin, %{settings: %{
+          path: 123,
+          scheme: "httpd",
+          strip_api_path: "hello",
+          additional_headers: "string"
+        }})
 
       "apis/#{api_id}/plugins/proxy"
       |> put_management_url()
@@ -102,8 +101,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
 
   describe "preserves HTTP method, body and query params" do
     test "GET", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock()
+      create_proxy_to_mock(api_id)
 
       assert %{"request" => %{
         "method" => "GET",
@@ -116,8 +114,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     end
 
     test "POST", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock()
+      create_proxy_to_mock(api_id)
 
       assert %{"request" => %{
         "method" => "POST",
@@ -131,8 +128,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     end
 
     test "PUT", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock()
+      create_proxy_to_mock(api_id)
 
       assert %{"request" => %{
         "method" => "PUT",
@@ -146,8 +142,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     end
 
     test "DELETE", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock()
+      create_proxy_to_mock(api_id)
 
       assert %{"request" => %{
         "method" => "DELETE",
@@ -161,8 +156,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
   end
 
   test "works when upstream does not exist", %{api_id: api_id, api_path: api_path} do
-    proxy = :proxy_plugin
-    |> build_factory_params(%{settings: %{host: "exampleabcdewqasdftrewq-does-not-exist.com"}})
+    proxy = build_factory_params(:proxy_plugin, %{settings: %{host: "exampleabcdewqasdftrewq-does-not-exist.com"}})
 
     "apis/#{api_id}/plugins/proxy"
     |> put_management_url()
@@ -180,10 +174,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
   end
 
   test "supports additional headers", %{api_id: api_id, api_path: api_path} do
-    api_id
-    |> create_proxy_to_mock(%{
-      additional_headers: [%{"hello" => "world"}]
-    })
+    create_proxy_to_mock(api_id, %{additional_headers: [%{"hello" => "world"}]})
 
     assert %{"request" => %{
       "headers" => headers
@@ -197,8 +188,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
   end
 
   test "preserves original headers", %{api_id: api_id, api_path: api_path} do
-    api_id
-    |> create_proxy_to_mock()
+    create_proxy_to_mock(api_id)
 
     assert %{"request" => %{
       "headers" => headers
@@ -212,8 +202,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
   end
 
   test "returns upstream headers", %{api_id: api_id, api_path: api_path} do
-    api_id
-    |> create_proxy_to_mock()
+    create_proxy_to_mock(api_id)
 
     assert %{headers: headers} = api_path
     |> put_public_url()
@@ -229,8 +218,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     test "when `strip_api_path` is false and proxy path is `/`", %{api_id: api_id, api_path: api_path} do
       proxy_path = "/"
 
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         path: proxy_path,
         scheme: "http",
         strip_api_path: false
@@ -254,8 +242,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     end
 
     test "when `strip_api_path` is false and proxy path is not set", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         scheme: "http",
         strip_api_path: false
       })
@@ -280,8 +267,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     test "when `strip_api_path` is false and proxy path is set", %{api_id: api_id, api_path: api_path} do
       proxy_path = "/proxy"
 
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         path: proxy_path,
         scheme: "http",
         strip_api_path: false
@@ -307,8 +293,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     test "when `strip_api_path` is true and proxy path is /", %{api_id: api_id, api_path: api_path} do
       proxy_path = "/"
 
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         path: proxy_path,
         scheme: "http",
         strip_api_path: true
@@ -332,8 +317,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     end
 
     test "when `strip_api_path` is true and proxy path is not set", %{api_id: api_id, api_path: api_path} do
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         scheme: "http",
         strip_api_path: true
       })
@@ -358,8 +342,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     test "when `strip_api_path` is true and proxy path is set", %{api_id: api_id, api_path: api_path} do
       proxy_path = "/proxy"
 
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         path: proxy_path,
         scheme: "http",
         strip_api_path: true
@@ -387,8 +370,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     test "x-consumer-id and x-consumer-scope are set correctly", %{api_id: api_id, api_path: api_path} do
       proxy_path = "/proxy"
 
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         path: proxy_path,
         scheme: "http",
         strip_api_path: true
@@ -416,22 +398,27 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
       token = build_jwt_token(token_data, secret)
       headers = [{"authorization", "Bearer #{token}"}]
 
-      headers = api_path
-      |> put_public_url()
-      |> get!(headers)
-      |> get_body()
-      |> get_in(["data", "request", "headers"])
+      headers =
+        api_path
+        |> put_public_url()
+        |> get!(headers)
+        |> get_body()
+        |> get_in(["data", "request", "headers"])
 
-      actual_scope = headers
-      |> Enum.filter_map(fn(x) -> Map.has_key?(x, "x-consumer-scope") end, &(Map.get(&1, "x-consumer-scope")))
-      |> Enum.at(0)
-      |> String.split(" ")
+      actual_scope =
+        headers
+        |> Enum.filter(fn(x) -> Map.has_key?(x, "x-consumer-scope") end)
+        |> Enum.map(&(Map.get(&1, "x-consumer-scope")))
+        |> Enum.at(0)
+        |> String.split(" ")
 
       assert expected_scopes == actual_scope
 
-      actual_party_id = headers
-      |> Enum.filter_map(fn(x) -> Map.has_key?(x, "x-consumer-id") end, &(Map.get(&1, "x-consumer-id")))
-      |> Enum.at(0)
+      actual_party_id =
+        headers
+        |> Enum.filter(fn(x) -> Map.has_key?(x, "x-consumer-id") end)
+        |> Enum.map(&(Map.get(&1, "x-consumer-id")))
+        |> Enum.at(0)
 
       assert expected_consumer_id == actual_party_id
     end
@@ -439,8 +426,7 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
     test "protected headers cannot be overridden", %{api_id: api_id, api_path: api_path} do
       proxy_path = "/proxy"
 
-      api_id
-      |> create_proxy_to_mock(%{
+      create_proxy_to_mock(api_id, %{
         path: proxy_path,
         scheme: "http",
         strip_api_path: true
@@ -450,16 +436,18 @@ defmodule Annon.Acceptance.Plugins.ProxyTest do
 
       headers = Enum.map(protected_headers, fn x -> {x, "111"} end)
 
-      headers = api_path
-      |> put_public_url()
-      |> get!(headers)
-      |> get_body()
-      |> get_in(["data", "request", "headers"])
+      headers =
+        api_path
+        |> put_public_url()
+        |> get!(headers)
+        |> get_body()
+        |> get_in(["data", "request", "headers"])
 
-      assert "" == headers
-      |> Enum.filter_map(fn x -> Enum.at(Map.keys(x), 0) in protected_headers end,
-        &(Map.get(&1, Enum.at(Map.keys(&1), 0))))
-      |> Enum.join("")
+      assert "" ==
+        headers
+        |> Enum.filter(fn x -> Enum.at(Map.keys(x), 0) in protected_headers end)
+        |> Enum.map(&(Map.get(&1, Enum.at(Map.keys(&1), 0))))
+        |> Enum.join("")
     end
   end
 end
