@@ -131,8 +131,7 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Map.get(:body)
       |> Poison.decode!
 
-    assert "Your scope does not allow to access this resource. Missing allowances: httpbin:write"
-      == response["error"]["message"]
+    assert "Scope is not allowed by broker" == response["error"]["message"]
     assert "forbidden" == response["error"]["type"]
     assert 403 == response["meta"]["code"]
 
@@ -158,8 +157,7 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Map.get(:body)
       |> Poison.decode!
 
-    assert "Your scope does not allow to access this resource. Missing allowances: httpbin:read"
-      == response["error"]["message"]
+    assert "Scope is not allowed by broker" == response["error"]["message"]
     assert "forbidden" == response["error"]["type"]
     assert 403 == response["meta"]["code"]
 

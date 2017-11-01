@@ -195,7 +195,7 @@ defmodule Annon.Plugins.ACLTest do
 
       assert %{
         "error" => %{
-          "message" => "Your scope does not allow to access this resource. Missing allowances: some_resource:write",
+          "message" => "Scope is not allowed by broker",
           "type" => "forbidden"
         }
       } = conn
@@ -223,7 +223,7 @@ defmodule Annon.Plugins.ACLTest do
 
       assert %{
         "error" => %{
-          "message" => "Your scope does not allow to access this resource. Missing allowances: some_resource:read",
+          "message" => "Scope is not allowed by broker",
           "type" => "forbidden"
         }
       } = conn
