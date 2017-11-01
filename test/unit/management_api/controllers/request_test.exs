@@ -256,6 +256,7 @@ defmodule Annon.ManagementAPI.Controllers.RequestTest do
       assert length(resp) == 2
     end
 
+    @tag :pending
     test "paginates results", %{conn: conn} do
       # Ending Before
       requests = RequestsFactory.insert_list(10, :request)
