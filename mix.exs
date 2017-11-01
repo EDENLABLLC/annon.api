@@ -79,8 +79,8 @@ defmodule Annon.Mixfile do
 
   # Settings for publishing in Hex package manager:
   defp package do
-    [contributors: ["Nebo #15"],
-     maintainers: ["Nebo #15"],
+    [contributors: ["edenlabllc"],
+     maintainers: ["edenlabllc"],
      licenses: ["LISENSE.md"],
      links: %{github: "https://github.com/edenlabllc/annon.api"},
      files: ~w(lib LICENSE.md mix.exs README.md)]
