@@ -3,6 +3,7 @@ defmodule Annon.Requests.Sandbox do
   A plug to allow concurrent, transactional acceptance tests with Annon.Requests module.
   """
   import Plug.Conn
+  alias Annon.Requests
 
   def init(opts \\ []) do
     Keyword.get(opts, :sandbox, Ecto.Adapters.SQL.Sandbox)
@@ -27,9 +28,9 @@ defmodule Annon.Requests.Sandbox do
   end
 
   defp allow_sandbox_access(%{repo: repos, owner: owner}, sandbox, conn) do
-    low_writer_pid = Process.whereis(Annon.Requests.LogWriter)
+    low_writer_pid = Process.whereis(Requests.LogWriter)
 
-    Annon.Requests.LogWriter.subscribe(self())
+    Requests.LogWriter.subscribe(self())
 
     repos
     |> List.wrap()
@@ -38,7 +39,7 @@ defmodule Annon.Requests.Sandbox do
     end)
 
     register_before_send(conn, fn conn ->
-      Annon.Requests.LogWriter.unsubscribe(self())
+      Requests.LogWriter.unsubscribe(self())
       conn
     end)
   end
