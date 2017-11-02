@@ -15,7 +15,7 @@ elixir:
 otp_release:
   - 20.1.2
 notifications:
-  slack: 
+  slack:
     rooms:
       - secure: "j6bC+QrahfmM8yh8YXaITJMJYX7XtvtE6T2vJLKU4nDrYMc02i8RHAeYD4bid91412DVMgBymYyKHs/5PVLBV5U7y465Uyu1F5cY+SDk1E8NfaY16l2lq3ptUIaOCxZRIC4pKg2CcR5/3pRuT+2j389iSTTMHNnncozTqDY2hLhCqx1agNpSMqtMVTq7ihZqm7dfq5BRR98RMT3Y8yfXY0rpk78gs7lMCCqEqXNysdQ4CaEE8r8syj2nHtAqf78JUIVgaItp257zRhgjEUOyRdA4Z197t4uoiOAeyXI6sChW5dlpDDLsxiXU6Dt3hVSjE+iud5MxbbeJimK9MhpCvnqK4W4B+LKItygmyEYW4eWdHrqA7GIjD4UfH5DCSKldHiOPtP8EnuQURxectHw9s3Ddx+wcxrObawBj7+hTGd04ZgBh6HdvJiJYW1ga/H6lQzbP9puxsArsUuWl2ZGdNjkg5W4O/0X3PFg/eL1T3QlBK4PLBcYzpfArp6af+iwQ3BBtQwOZ5F3WwFOD/DKqnJ7asbQfDUtBni0q8XE0KzqHg2eVfRye/c0NRE8h+20i+VqAyW3yqiZCKctCAbDcBOBRaSwxVZoKgUKhdHwGRrJcl0YMNBmgmQgNHqFO62FcBZrjxOBIZGpOHDgoQknaVXDxzNSyeRyh3pr3tl23Qoo="
     on_success: always
@@ -45,11 +45,11 @@ before_script:
   - source ./bin/ci/release/fetch-project-environment.sh
   # Load information about new version
   - source ./bin/ci/release/fetch-source-version.sh || travis_terminate 1
-  # Load information about changelog
-  - source ./bin/ci/release/fetch-changelog.sh
 script:
   # Increment version in mix.exs
   - ./bin/ci/release/put-source-version.sh || travis_terminate 1
+  # Create release notes
+  - ./bin/ci/release/put-release-notes.sh
   # Run all tests except pending ones
   - ./bin/mix_tests.sh || travis_terminate 1
   # Build Docker container
