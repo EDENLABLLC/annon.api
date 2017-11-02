@@ -5,6 +5,7 @@ defmodule Annon.ManagementAPI.Router do
   use Plug.Router
   use Plug.ErrorHandler
   alias Annon.Helpers.Response
+  alias Annon.ManagementAPI.Controllers
 
   if Confex.get_env(:annon_api, :sql_sandbox) do
     plug Annon.Requests.Sandbox
@@ -23,13 +24,13 @@ defmodule Annon.ManagementAPI.Router do
   plug Annon.ManagementAPI.ConfigReloaderPlug,
     subscriber: &Annon.AutoClustering.reload_config/0
 
-  forward "/apis", to: Annon.ManagementAPI.Controllers.API
-  forward "/requests", to: Annon.ManagementAPI.Controllers.Request
-  forward "/dictionaries", to: Annon.ManagementAPI.Controllers.Dictionaries
+  forward "/apis", to: Controllers.API
+  forward "/requests", to: Controllers.Request
+  forward "/dictionaries", to: Controllers.Dictionaries
 
-  get "/apis_status", do: Annon.ManagementAPI.Controllers.Monitoring.list_apis_status(conn)
-  get "/cluster_status", do: Annon.ManagementAPI.Controllers.Monitoring.list_cluster_status(conn)
-  get "/requests_metrics", do: Annon.ManagementAPI.Controllers.Monitoring.get_requests_metrics(conn)
+  get "/apis_status", do: Controllers.Monitoring.list_apis_status(conn)
+  get "/cluster_status", do: Controllers.Monitoring.list_cluster_status(conn)
+  get "/requests_metrics", do: Controllers.Monitoring.get_requests_metrics(conn)
 
   match _ do
     Response.send_error(conn, :not_found)
