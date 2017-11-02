@@ -1,0 +1,6 @@
+
+Changelog: 
+**Patches and bug fixes**: 
+[Patch] Updated submodules: release_notes creation scripts
+
+
