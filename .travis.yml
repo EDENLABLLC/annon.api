@@ -45,10 +45,12 @@ before_script:
   - source ./bin/ci/release/fetch-project-environment.sh
   # Load information about new version
   - source ./bin/ci/release/fetch-source-version.sh || travis_terminate 1
+  # Load information about changelog
+  - source ./bin/ci/release/fetch-changelog.sh
 script:
   # Increment version in mix.exs
   - ./bin/ci/release/put-source-version.sh || travis_terminate 1
-  # Create release notes
+  # Create release notes log for minor version
   - ./bin/ci/release/put-release-notes.sh
   # Run all tests except pending ones
   - ./bin/mix_tests.sh || travis_terminate 1
