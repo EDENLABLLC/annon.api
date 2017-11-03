@@ -1,0 +1,27 @@
+Change log for versions 0.12.0 - 0.12.19
+
+**Patches and bug fixes**: 
+
+[patch] release notes creation logic updated
+[Patch] Updated submodules: release_notes creation scripts
+[PATCH]: gitmodules updated and syntax fix
+[Patch] Update .gitmodules with a link to the new ci-utils repo
+[patch] updated contributors and maintainers to edenlabllc
+[PATCH] Fix UTC timezone issue with timestamptz (#12)
+[patch] Fix UTC timezone issue with timestamptz
+[patch] - change broker scope err message
+[patch] - fix travis.yml
+[patch] - rename Nebo15 to edenlabllc
+[patch] - revert mix.lock
+[patch] - updated deps
+[patch] try to fix travis CI
+[patch] updated deps
+[patch] bump version
+[patch] revert test fix
+[patch] revert deps
+IP Restriction plugin [patch]
+IP Restriction plugin: update doc [PATCH]
+Fixed travis CI/CD  [patch]
+Fix deploy.sh [patch]
+Added travis CD [patch]
+Added travis CD [patch]
