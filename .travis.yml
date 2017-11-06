@@ -60,7 +60,7 @@ script:
   - source .env; PGPASSWORD="${DB_PASSWORD}"; psql -U ${DB_USER} -w -c"CREATE DATABASE ${DB_NAME}"
   # Run Docker container
   - sudo ./bin/ci/release/start-container.sh -a '--add-host=httpbin.org:$HOST_IP'
-  - ./bin/ci/release/check-container.sh || travis_terminate 1
+  - sudo ./bin/ci/release/check-container.sh || travis_terminate 1
   # Run acceptance tests on Docker container
   - ./test/sanity-test.sh || travis_terminate 1
   # Submit Docker container to Docker Hub and create GitHub Release by pushing tag with changelog
