@@ -1,0 +1,63 @@
+Change log for versions 0.12.0 - 0.12.25
+
+**Patches and bug fixes**:
+
+CI submodule updated
+Git submodules and Travis scripts updated
+submodule re-created
+Travis scripts update
+fix for the Travis script
+CI & Travis scripts updated
+release notes creation logic updated
+Updated submodules: release_notes creation scripts
+: gitmodules updated and syntax fix
+Update .gitmodules with a link to the new ci-utils repo
+updated contributors and maintainers to edenlabllc
+Fix UTC timezone issue with timestamptz (#12)
+Fix UTC timezone issue with timestamptz
+- change broker scope err message
+- fix travis.yml
+- rename Nebo15 to edenlabllc
+- revert mix.lock
+- updated deps
+try to fix travis CI
+updated deps
+bump version
+revert test fix
+revert deps
+
+**Other**:
+
+CI Submodule updated
+Submodule removed
+Submodules updated (#14)
+Update .gitmodules (#13)
+Syntax fix
+Fix for filter_map deprecation warnings in tests
+skip paging test
+fail build when commit messages in PR doesn't contains release tag
+bump version
+catch 422 error response
+log response body from third party auth
+replace load_from_system_env to on_init
+try Elixir 1.5.2
+pass api-key header for third-party auth resolver
+fix test
+update travis elixir version
+EHealth-214: suppress alias usage error
+EHealth-214: validate broker scope in ACL, updated deps
+EHealth-214: proxy api-client header
+IP Restriction plugin [patch]
+IP Restriction plugin: update doc [PATCH]
+Style fix
+IP Restriction plugin: support comparison with mask
+IP Restriction plugin: support mask format
+Fixed travis CI/CD  [patch]
+Update README.md
+Fix deploy.sh [patch]
+Update mix.exs
+Update mix.exs
+Added travis CD [patch]
+Added travis CD [patch]
+Added travis CD
+Added travis CD
