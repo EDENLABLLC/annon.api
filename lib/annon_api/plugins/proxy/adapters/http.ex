@@ -41,7 +41,10 @@ defmodule Annon.Plugins.Proxy.Adapters.HTTP do
       |> Map.get(:body_params)
       |> Poison.encode!()
 
-    case HTTPoison.request(method, upstream_url, body, upstream_request.headers, @buffer_opts) do
+    params = @buffer_opts
+    params = if upstream_request.path == "api-svc.mithril", do: Map.put(params, :hackney, [pool: :mithril]), else: params
+
+    case HTTPoison.request(method, upstream_url, body, upstream_request.headers, params) do
       {:ok, %{headers: resp_headers, status_code: resp_status_code, body: resp_body}} ->
         conn =
           conn

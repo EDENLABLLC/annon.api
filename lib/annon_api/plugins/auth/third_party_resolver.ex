@@ -10,7 +10,7 @@ defmodule Annon.Plugins.Auth.ThirdPartyResolver do
     headers = [{"content-type", "application/json"}, {"accept", "application/json"}, {"api-key", api_key}]
 
     with {:ok, %Response{status_code: 200, body: body}}
-            when is_binary(body) and body != "" <- HTTPoison.get(url, headers),
+            when is_binary(body) and body != "" <- HTTPoison.get(url, headers, hackney: [pool: :mithril]),
          {:ok, response} <- Poison.decode(body) do
       parse_success_response(response)
     else

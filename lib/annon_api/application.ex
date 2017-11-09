@@ -22,6 +22,7 @@ defmodule Annon do
       worker(Annon.AutoClustering, []),
       management_endpoint_spec(),
       supervisor(Annon.PublicAPI.ServerSupervisor, []),
+      :hackney_pool.child_spec(:mithril, [timeout: 30_000, max_connections: 100])
     ]
 
     opts = [strategy: :one_for_one, name: Annon.Supervisor]
