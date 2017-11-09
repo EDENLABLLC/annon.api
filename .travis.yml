@@ -49,7 +49,7 @@ before_script:
   - source ./bin/ci/release/fetch-changelog.sh
 script:
   # Check for versioning error
-  - ./bin/ci/release/check-version-error.sh
+  - ./bin/ci/release/check-version-error.sh || travis_terminate 1
   # Increment version in mix.exs
   - ./bin/ci/release/put-source-version.sh || travis_terminate 1
   # Create release notes log for minor version
