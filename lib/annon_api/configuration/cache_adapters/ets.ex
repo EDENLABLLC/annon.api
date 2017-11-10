@@ -41,9 +41,20 @@ defmodule Annon.Configuration.CacheAdapters.ETS do
   def config_change(opts) do
     table_name = Keyword.fetch!(opts, :cache_space)
 
-    objects = Enum.map(API.dump_apis(), fn api ->
+    apis = API.dump_apis()
+    objects = Enum.map(apis, fn api ->
       priority = -api.matching_priority
       {{priority, api.id}, api, compile_host_regex(api.request.host), compile_path_regex(api.request.path)}
+    end)
+
+    apis
+    |> Enum.reduce([], fn api, acc ->
+      api.plugins
+      |> Enum.filter(&(Map.get(&1, :name) == "proxy"))
+      |> Enum.reduce(acc, &get_pools/2)
+    end)
+    |> Enum.each(fn domain ->
+      :ok = :hackney_pool.start_pool(domain, [timeout: 15_000, max_connections: 100])
     end)
 
     case objects do
@@ -53,6 +64,15 @@ defmodule Annon.Configuration.CacheAdapters.ETS do
         true = :ets.delete_all_objects(table_name)
         true = :ets.insert(table_name, objects)
         :ok
+    end
+  end
+
+  defp get_pools(plugin, pools) do
+    host = plugin.settings["host"]
+    if host in pools do
+      pools
+    else
+      [host | pools]
     end
   end
 
