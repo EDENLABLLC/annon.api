@@ -33,6 +33,8 @@ defmodule Annon.Plugins.Logger do
     }
 
     Logger.info(inspect(request))
+
+    conn
   end
 
   defp sync_insert_request(request, conn) do
