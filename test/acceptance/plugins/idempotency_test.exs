@@ -35,6 +35,7 @@ defmodule Annon.Acceptance.Plugins.IdempotencyTest do
     %{api_id: api_id, api_path: api_path, api: api}
   end
 
+  @tag :pending
   test "test idempotency POST request", %{api_path: api_path} do
     req1_id = api_path
     |> put_public_url()
@@ -69,6 +70,7 @@ defmodule Annon.Acceptance.Plugins.IdempotencyTest do
     assert req4_id != req1_id
   end
 
+  @tag :pending
   test "test idempotency validates request equality", %{api_path: api_path} do
     api_path
     |> put_public_url()
