@@ -41,7 +41,9 @@ defmodule Annon.Plugins.Proxy.Adapters.HTTP do
       |> Map.get(:body_params)
       |> Poison.encode!()
 
-    case HTTPoison.request(method, upstream_url, body, upstream_request.headers, @buffer_opts) do
+    params = Keyword.put(@buffer_opts, :hackney, [pool: upstream_request.host])
+
+    case HTTPoison.request(method, upstream_url, body, upstream_request.headers, params) do
       {:ok, %{headers: resp_headers, status_code: resp_status_code, body: resp_body}} ->
         conn =
           conn
