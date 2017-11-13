@@ -1,7 +1,8 @@
-Change log for versions 0.12.0 - 0.12.26
+Change log for versions 0.12.0 - 0.12.27
 
 **Patches and bug fixes**:
 
+Turn off logging
 : CI update: check for versioning error (#15)
 CI submodule updated
 Git submodules and Travis scripts updated
@@ -29,6 +30,9 @@ revert deps
 
 **Other**:
 
+Mark more tests as pending
+Start fixing tests...
+Return conn
 CI Submodule updated
 Submodule removed
 Submodules updated (#14)
