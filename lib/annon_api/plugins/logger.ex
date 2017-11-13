@@ -32,9 +32,9 @@ defmodule Annon.Plugins.Logger do
       status_code: conn.status
     }
 
-    if Map.get(feature_requirements, :log_consistency, false),
-      do: sync_insert_request(request, conn),
-    else: async_insert_request(request, conn)
+    Logger.info(inspect(request))
+
+    conn
   end
 
   defp sync_insert_request(request, conn) do

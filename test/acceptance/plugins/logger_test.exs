@@ -47,6 +47,7 @@ defmodule Annon.Acceptance.Plugins.LoggerTest do
   end
 
   describe "logger_plugin" do
+    @tag :pending
     test "logger_plugin", %{api_path: api_path} do
       response = "#{api_path}?key=value"
       |> put_public_url()
@@ -92,6 +93,7 @@ defmodule Annon.Acceptance.Plugins.LoggerTest do
       assert client_latency == gateway_latency + upstream_latency
     end
 
+    @tag :pending
     test "file body should not be logged", %{api_path: api_path} do
       response =
         api_path
