@@ -34,7 +34,6 @@ env:
   except:
     - /^[0-9]*\.[0-9]*\.[0-9]*/
 before_install:
-  - openssl aes-256-cbc -K $encrypted_8dd9ff6971ec_key -iv $encrypted_8dd9ff6971ec_iv -in eHealth-eef414faa06b.json.enc -out eHealth-eef414faa06b.json -d
   # Expose DB to Docker container
   - sudo /bin/bash ./bin/ci/init-db.sh
   # Run HTTPBin locally
@@ -67,6 +66,7 @@ script:
   - ./test/sanity-test.sh || travis_terminate 1
   # Submit Docker container to Docker Hub and create GitHub Release by pushing tag with changelog
   - ./bin/ci/release/push-changes.sh || travis_terminate 1
+  - openssl aes-256-cbc -K $encrypted_05c49c11b097_key -iv $encrypted_05c49c11b097_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d
   - sudo ./bin/deploy.sh || travis_terminate 1
 after_success:
   # Rebuild docs
