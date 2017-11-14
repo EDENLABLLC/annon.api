@@ -1,7 +1,8 @@
-Change log for versions 0.12.0 - 0.12.29
+Change log for versions 0.12.0 - 0.12.30
 
 **Patches and bug fixes**:
 
+Log json strings
 Fix deploy key
 create basic connection pools based on settings hosts
 Turn off logging
