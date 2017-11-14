@@ -68,7 +68,7 @@ defmodule Annon.Mixfile do
      {:cors_plug, "~> 1.1"},
      {:dogstat, "~> 0.1.0"},
      {:cidr, ">= 1.1.0"},
-     {:xprof, "~> 1.3.0"},
+     {:wobserver, "~> 0.1"},
      {:ex_machina, ">= 1.0.0", only: [:dev, :test]},
      {:dogma, ">= 0.0.0", only: [:dev, :test]},
      {:benchfella, "~> 0.3", only: [:dev, :test]},
