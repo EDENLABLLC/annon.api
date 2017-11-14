@@ -73,7 +73,7 @@ defmodule Annon.Plugins.Logger do
       uri: conn.request_path,
       query: Plug.Conn.Query.decode(conn.query_string),
       headers: modify_headers_list(conn.req_headers),
-      body: Poison.encode!(conn.body_params)
+      body: conn.body_params
     }
   end
 
@@ -92,7 +92,7 @@ defmodule Annon.Plugins.Logger do
     %{
       status_code: conn.status,
       headers: modify_headers_list(conn.resp_headers),
-      body: get_response_body(conn)
+      # body: get_response_body(conn)
     }
   end
 
