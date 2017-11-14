@@ -34,17 +34,10 @@ config :annon_api, :configuration_cache,
 config :annon_api, :plugin_pipeline,
   default_features: []
 
-# Configure JSON Logger back-end
-config :logger_json, :backend,
-  load_from_system_env: true,
-  json_encoder: Poison,
-  metadata: :all
-
 # Do not print debug messages in production
 # and handle all other reports by Elixir Logger with JSON back-end.
 # SASL reports turned off because of their verbosity.
 config :logger,
-  backends: [LoggerJSON],
   level: :info,
   # handle_sasl_reports: true,
   handle_otp_reports: true

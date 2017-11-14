@@ -25,7 +25,7 @@ defmodule Annon.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      extra_applications: [:logger, :logger_json, :confex, :cowboy, :ssl, :plug, :postgrex, :ecto, :joken,
+      extra_applications: [:logger, :confex, :cowboy, :ssl, :plug, :postgrex, :ecto, :joken,
                            :nex_json_schema, :poison, :httpoison, :skycluster, :eview, :dogstat,
                            :ecto_paging, :runtime_tools],
       mod: {Annon, []}
@@ -64,7 +64,6 @@ defmodule Annon.Mixfile do
      {:eview,  ">= 0.0.0"},
      {:ecto_paging, ">= 0.0.0"},
      {:phoenix_ecto, ">= 0.0.0"},
-     {:logger_json, "~> 0.5.0"},
      {:cors_plug, "~> 1.1"},
      {:dogstat, "~> 0.1.0"},
      {:cidr, ">= 1.1.0"},
