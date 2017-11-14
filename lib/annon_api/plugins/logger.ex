@@ -92,7 +92,7 @@ defmodule Annon.Plugins.Logger do
     %{
       status_code: conn.status,
       headers: modify_headers_list(conn.resp_headers),
-      body: get_response_body(conn)
+      # body: get_response_body(conn)
     }
   end
 
