@@ -10,15 +10,12 @@ defmodule Annon.ManagementAPI.Controllers.API do
   use Annon.ManagementAPI.ControllersRouter
   alias Annon.Configuration.API, as: ConfigurationAPI
   alias Annon.Configuration.Schemas.API, as: APISchema
-  alias Annon.ManagementAPI.Pagination
 
   get "/" do
-    paging = Pagination.page_info_from(conn.query_params)
-
     conn
     |> Map.fetch!(:query_params)
-    |> Map.take(["name"])
-    |> ConfigurationAPI.list_apis(paging)
+    |> Map.take(~w(name page_size page))
+    |> ConfigurationAPI.list_apis()
     |> render_collection_with_pagination(conn)
   end
 

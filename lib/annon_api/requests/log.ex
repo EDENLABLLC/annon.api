@@ -5,7 +5,6 @@ defmodule Annon.Requests.Log do
   import Ecto.{Query, Changeset}, warn: false
   alias Annon.Requests.Repo
   alias Annon.Requests.Request
-  alias Ecto.Paging
 
   @request_fields [:id, :idempotency_key, :ip_address, :status_code]
   @required_request_fields [:response, :status_code]
@@ -23,17 +22,17 @@ defmodule Annon.Requests.Log do
   ## Examples
 
       iex> list_requests()
-      {[%Annon.Requests.Request{}, ...], %Ecto.Paging{}}
+      %Scrivener.Page{entries: [%Annon.Requests.Request{}, ...]}
 
   """
-  def list_requests(conditions \\ %{}, %Paging{} = paging \\ %Paging{limit: 50}) do
+  def list_requests(params \\ %{}) do
     Request
-    |> maybe_filter_idempotency_key(conditions)
-    |> maybe_filter_api_ids(conditions)
-    |> maybe_filter_status_codes(conditions)
-    |> maybe_filter_ip_addresses(conditions)
+    |> maybe_filter_idempotency_key(params)
+    |> maybe_filter_api_ids(params)
+    |> maybe_filter_status_codes(params)
+    |> maybe_filter_ip_addresses(params)
     |> order_by(desc: :inserted_at)
-    |> Repo.page(paging)
+    |> Repo.paginate(params)
   end
 
   defp maybe_filter_idempotency_key(query, %{"idempotency_key" => idempotency_key}) when is_binary(idempotency_key) do

@@ -36,7 +36,7 @@ defmodule Annon.ManagementAPI.Controllers.APITest do
       apis = ConfigurationFactory.insert_list(10, :api)
 
       pagination_query = URI.encode_query(%{
-        "limit" => 2
+        "page_size" => 2
       })
 
       resp =
@@ -55,9 +55,7 @@ defmodule Annon.ManagementAPI.Controllers.APITest do
     test "lists all apis when limit is nil", %{conn: conn} do
       ConfigurationFactory.insert_list(10, :api)
 
-      pagination_query = URI.encode_query(%{
-        "limit" => nil
-      })
+      pagination_query = URI.encode_query(%{})
 
       resp =
         conn
@@ -72,7 +70,7 @@ defmodule Annon.ManagementAPI.Controllers.APITest do
       ConfigurationFactory.insert_list(10, :api)
 
       pagination_query = URI.encode_query(%{
-        "limit" => "not_a_number"
+        "page_size" => "not_a_number"
       })
 
       resp =
@@ -137,8 +135,8 @@ defmodule Annon.ManagementAPI.Controllers.APITest do
       apis = ConfigurationFactory.insert_list(10, :api)
 
       pagination_query = URI.encode_query(%{
-        "limit" => 2,
-        "ending_before" => Enum.at(apis, 9).id
+        "page_size" => 2,
+        "page" => 5
       })
 
       resp =
@@ -147,29 +145,14 @@ defmodule Annon.ManagementAPI.Controllers.APITest do
         |> json_response(200)
         |> Map.get("data")
 
-      assert Enum.at(resp, 0)["id"] == Enum.at(apis, 7).id
-      assert Enum.at(resp, 1)["id"] == Enum.at(apis, 8).id
+      assert Enum.at(resp, 0)["id"] == Enum.at(apis, 8).id
+      assert Enum.at(resp, 1)["id"] == Enum.at(apis, 9).id
       assert length(resp) == 2
-
-      # Without Limit
-      pagination_query = URI.encode_query(%{
-        "ending_before" => Enum.at(apis, 9).id
-      })
-
-      resp =
-        conn
-        |> get(apis_path() <> "?" <> pagination_query)
-        |> json_response(200)
-        |> Map.get("data")
-
-      assert Enum.at(resp, 0)["id"] == Enum.at(apis, 0).id
-      assert Enum.at(resp, 1)["id"] == Enum.at(apis, 1).id
-      assert length(resp) == 9
 
       # Starting After
       pagination_query = URI.encode_query(%{
-        "limit" => 2,
-        "starting_after" => Enum.at(apis, 5).id
+        "page_size" => 2,
+        "page" => 4,
       })
 
       resp =
@@ -184,7 +167,8 @@ defmodule Annon.ManagementAPI.Controllers.APITest do
 
       # Without Limit
       pagination_query = URI.encode_query(%{
-        "starting_after" => Enum.at(apis, 5).id
+        "page_size" => 6,
+        "page" => 2
       })
 
       resp =

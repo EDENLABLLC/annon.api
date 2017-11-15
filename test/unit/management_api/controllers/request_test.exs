@@ -36,7 +36,7 @@ defmodule Annon.ManagementAPI.Controllers.RequestTest do
       requests = RequestsFactory.insert_list(10, :request)
 
       pagination_query = URI.encode_query(%{
-        "limit" => 2
+        "page_size" => 2
       })
 
       resp =

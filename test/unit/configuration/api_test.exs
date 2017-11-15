@@ -5,8 +5,7 @@ defmodule Annon.Configuration.APITest do
   alias Annon.Configuration.Schemas.API, as: APISchema
   alias Annon.Configuration.Schemas.Plugin, as: PluginSchema
   alias Annon.Factories.Configuration, as: ConfigurationFactory
-  alias Ecto.Paging
-  alias Ecto.Paging.Cursors
+  alias Scrivener.Page
 
   @create_attrs %{
     name: "An API",
@@ -25,9 +24,9 @@ defmodule Annon.Configuration.APITest do
 
   describe "list_apis/1" do
     test "returns all apis" do
-      assert {[], _paging} = API.list_apis()
+      assert %Page{entries: []} = API.list_apis()
       api = ConfigurationFactory.insert(:api)
-      assert {[^api], _paging} = API.list_apis()
+      assert %Page{entries: [^api]} = API.list_apis()
     end
 
     test "filters by name" do
@@ -35,11 +34,11 @@ defmodule Annon.Configuration.APITest do
       api2 = ConfigurationFactory.insert(:api, name: "API one two")
       api3 = ConfigurationFactory.insert(:api, name: "API three")
 
-      assert {[^api1, ^api2, ^api3], _paging} = API.list_apis(%{})
-      assert {[^api1, ^api2, ^api3], _paging} = API.list_apis(%{"name" => nil})
-      assert {[], _paging} = API.list_apis(%{"name" => "unknown"})
-      assert {[^api2], _paging} = API.list_apis(%{"name" => "two"})
-      assert {[^api1, ^api2], _paging} = API.list_apis(%{"name" => "one"})
+      assert %Page{entries: [^api1, ^api2, ^api3]} = API.list_apis(%{})
+      assert %Page{entries: [^api1, ^api2, ^api3]} = API.list_apis(%{"name" => nil})
+      assert %Page{entries: []} = API.list_apis(%{"name" => "unknown"})
+      assert %Page{entries: [^api2]} = API.list_apis(%{"name" => "two"})
+      assert %Page{entries: [^api1, ^api2]} = API.list_apis(%{"name" => "one"})
     end
 
     test "paginates results" do
@@ -49,17 +48,14 @@ defmodule Annon.Configuration.APITest do
       api4 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
       api5 = ConfigurationFactory.insert(:api, id: Ecto.UUID.generate())
 
-      assert {[^api1, ^api2, ^api3, ^api4, ^api5], _paging} =
-        API.list_apis(%{}, %Paging{limit: nil})
-      assert {[^api1], _paging} =
-        API.list_apis(%{}, %Paging{limit: 1})
-      assert {[^api1, ^api2], _paging} =
-        API.list_apis(%{}, %Paging{limit: 2})
-
-      assert {[^api2, ^api3], _paging} =
-        API.list_apis(%{}, %Paging{limit: 2, cursors: %Cursors{starting_after: api1.id}})
-      assert {[^api3, ^api4], _paging} =
-        API.list_apis(%{}, %Paging{limit: 2, cursors: %Cursors{ending_before: api5.id}})
+      assert %Page{entries: [^api1, ^api2, ^api3, ^api4, ^api5]} =
+        API.list_apis(%{})
+      assert %Page{entries: [^api1]} =
+        API.list_apis(%{"page_size" => 1})
+      assert %Page{entries: [^api1, ^api2]} =
+        API.list_apis(%{page_size: 2})
+      assert %Page{entries: [^api3, ^api4]} =
+        API.list_apis(%{page_size: 2, page: 2})
     end
 
     test "paginates with filters" do
@@ -68,17 +64,10 @@ defmodule Annon.Configuration.APITest do
       api3 = ConfigurationFactory.insert(:api, name: "one three")
       api4 = ConfigurationFactory.insert(:api, name: "one four")
 
-      assert {[^api2, ^api3], _paging} =
-        API.list_apis(
-          %{"name" => "one"},
-          %Paging{limit: 2, cursors: %Cursors{starting_after: api1.id}}
-        )
-
-      assert {[^api2, ^api3], _paging} =
-        API.list_apis(
-          %{"name" => "one"},
-          %Paging{limit: 2, cursors: %Cursors{ending_before: api4.id}}
-        )
+      assert %Page{entries: [^api1, ^api2]} =
+        API.list_apis(%{"name" => "one", "page_size" => 2})
+      assert %Page{entries: [^api3, ^api4]} =
+        API.list_apis(%{"name" => "one", "page_size" => 2, "page" => 2})
     end
   end
 
@@ -171,7 +160,7 @@ defmodule Annon.Configuration.APITest do
       assert api.request.port == @create_attrs.request.port
       assert api.request.scheme == @create_attrs.request.scheme
 
-      assert {[^api], _} = API.list_apis()
+      assert %Page{entries: [^api]} = API.list_apis()
     end
 
     test "with invalid data returns error changeset" do
