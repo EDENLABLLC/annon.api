@@ -3,11 +3,12 @@ defmodule Annon.ManagementAPI.Render do
   Use this helpers when you want to render result in a controllers.
   """
   import Annon.Helpers.Response
+  alias Scrivener.Page
 
   @doc """
   Renders collection with paging.
   """
-  def render_collection_with_pagination({resources, %Ecto.Paging{} = paging}, conn) do
+  def render_collection_with_pagination(%Page{entries: resources} = paging, conn) do
     conn = Plug.Conn.assign(conn, :paging, paging)
     render_collection(resources, conn)
   end

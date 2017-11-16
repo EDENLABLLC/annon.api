@@ -7,7 +7,6 @@ defmodule Annon.Configuration.API do
   alias Annon.Configuration.Schemas.API, as: APISchema
   alias Annon.Configuration.Schemas.Plugin, as: PluginSchema
   alias Ecto.Multi
-  alias Ecto.Paging
 
   @api_fields [:name, :description, :health, :docs_url, :disclose_status, :matching_priority]
   @required_api_fields [:name]
@@ -23,13 +22,13 @@ defmodule Annon.Configuration.API do
   ## Examples
 
       iex> list_apis()
-      {[%Annon.Configuration.Schemas.API{}, ...], %Ecto.Paging{}}
+      %Scrivener.Page{entries: [%Annon.Configuration.Schemas.API{}, ...]}
 
   """
-  def list_apis(conditions \\ %{}, %Paging{} = paging \\ %Paging{limit: 50}) do
+  def list_apis(params \\ %{}) do
     APISchema
-    |> maybe_filter_name(conditions)
-    |> Repo.page(paging)
+    |> maybe_filter_name(params)
+    |> Repo.paginate(params)
   end
 
   defp maybe_filter_name(query, %{"name" => name}) when is_binary(name) do

@@ -4,25 +4,24 @@ defmodule Annon.Requests.LogTest do
   alias Annon.Requests.Log
   alias Annon.Requests.Request
   alias Annon.Factories.Requests, as: RequestsFactory
-  alias Ecto.Paging
-  alias Ecto.Paging.Cursors
+  alias Scrivener.Page
 
   describe "list_requests/1" do
     test "returns all requests" do
-      assert {[], _paging} = Log.list_requests()
-      assert {[], _paging} = Log.list_requests(%{})
+      assert %Page{entries: []} = Log.list_requests()
+      assert %Page{entries: []} = Log.list_requests(%{})
       request = RequestsFactory.insert(:request)
-      assert {[^request], _paging} = Log.list_requests()
+      assert %Page{entries: [^request]} = Log.list_requests()
     end
 
     test "filters by idempotency key" do
       request1 = RequestsFactory.insert(:request, idempotency_key: "my_idempotency_key_one")
       request2 = RequestsFactory.insert(:request, idempotency_key: "my_idempotency_key_two")
 
-      assert {[^request2, ^request1], _paging} = Log.list_requests(%{"idempotency_key" => nil})
-      assert {[], _paging} = Log.list_requests(%{"idempotency_key" => "unknown idempotency_key"})
-      assert {[^request1], _paging} = Log.list_requests(%{"idempotency_key" => "my_idempotency_key_one"})
-      assert {[^request2], _paging} = Log.list_requests(%{"idempotency_key" => "my_idempotency_key_two"})
+      assert %Page{entries: [^request2, ^request1]} = Log.list_requests(%{"idempotency_key" => nil})
+      assert %Page{entries: []} = Log.list_requests(%{"idempotency_key" => "unknown idempotency_key"})
+      assert %Page{entries: [^request1]} = Log.list_requests(%{"idempotency_key" => "my_idempotency_key_one"})
+      assert %Page{entries: [^request2]} = Log.list_requests(%{"idempotency_key" => "my_idempotency_key_two"})
     end
 
     test "filters by API IDs" do
@@ -30,10 +29,10 @@ defmodule Annon.Requests.LogTest do
       request2 = RequestsFactory.insert(:request, api: RequestsFactory.build(:api, id: "my_api_2"))
       request3 = RequestsFactory.insert(:request, api: RequestsFactory.build(:api, id: "my_api_3"))
 
-      assert {[^request3, ^request2, ^request1], _paging} = Log.list_requests(%{"api_ids" => nil})
-      assert {[], _paging} = Log.list_requests(%{"api_ids" => "unknown_api_id"})
-      assert {[^request2], _paging} = Log.list_requests(%{"api_ids" => "my_api_2"})
-      assert {[^request3, ^request2], _paging} = Log.list_requests(%{"api_ids" => "my_api_2,my_api_3"})
+      assert %Page{entries: [^request3, ^request2, ^request1]} = Log.list_requests(%{"api_ids" => nil})
+      assert %Page{entries: []} = Log.list_requests(%{"api_ids" => "unknown_api_id"})
+      assert %Page{entries: [^request2]} = Log.list_requests(%{"api_ids" => "my_api_2"})
+      assert %Page{entries: [^request3, ^request2]} = Log.list_requests(%{"api_ids" => "my_api_2,my_api_3"})
     end
 
     test "filters by status codes" do
@@ -41,10 +40,10 @@ defmodule Annon.Requests.LogTest do
       request2 = RequestsFactory.insert(:request, status_code: 201)
       request3 = RequestsFactory.insert(:request, status_code: 202)
 
-      assert {[^request3, ^request2, ^request1], _paging} = Log.list_requests(%{"status_codes" => nil})
-      assert {[], _paging} = Log.list_requests(%{"status_codes" => "404"})
-      assert {[^request2], _paging} = Log.list_requests(%{"status_codes" => "201"})
-      assert {[^request3, ^request2], _paging} = Log.list_requests(%{"status_codes" => "201,202"})
+      assert %Page{entries: [^request3, ^request2, ^request1]} = Log.list_requests(%{"status_codes" => nil})
+      assert %Page{entries: []} = Log.list_requests(%{"status_codes" => "404"})
+      assert %Page{entries: [^request2]} = Log.list_requests(%{"status_codes" => "201"})
+      assert %Page{entries: [^request3, ^request2]} = Log.list_requests(%{"status_codes" => "201,202"})
     end
 
     test "filters by IP addresses" do
@@ -52,10 +51,10 @@ defmodule Annon.Requests.LogTest do
       request2 = RequestsFactory.insert(:request, ip_address: "127.0.0.2")
       request3 = RequestsFactory.insert(:request, ip_address: "127.0.0.3")
 
-      assert {[^request3, ^request2, ^request1], _paging} = Log.list_requests(%{"ip_addresses" => nil})
-      assert {[], _paging} = Log.list_requests(%{"ip_addresses" => "127.0.0.255"})
-      assert {[^request2], _paging} = Log.list_requests(%{"ip_addresses" => "127.0.0.2"})
-      assert {[^request3, ^request2], _paging} = Log.list_requests(%{"ip_addresses" => "127.0.0.2,127.0.0.3"})
+      assert %Page{entries: [^request3, ^request2, ^request1]} = Log.list_requests(%{"ip_addresses" => nil})
+      assert %Page{entries: []} = Log.list_requests(%{"ip_addresses" => "127.0.0.255"})
+      assert %Page{entries: [^request2]} = Log.list_requests(%{"ip_addresses" => "127.0.0.2"})
+      assert %Page{entries: [^request3, ^request2]} = Log.list_requests(%{"ip_addresses" => "127.0.0.2,127.0.0.3"})
     end
 
     test "paginates results" do
@@ -65,17 +64,14 @@ defmodule Annon.Requests.LogTest do
       request4 = RequestsFactory.insert(:request, id: "4")
       request5 = RequestsFactory.insert(:request, id: "5")
 
-      assert {[^request5, ^request4, ^request3, ^request2, ^request1], _paging} =
-        Log.list_requests(%{}, %Paging{limit: nil})
-      assert {[^request5], _paging} =
-        Log.list_requests(%{}, %Paging{limit: 1})
-      assert {[^request5, ^request4], _paging} =
-        Log.list_requests(%{}, %Paging{limit: 2})
-
-      assert {[^request3, ^request2], _paging} =
-        Log.list_requests(%{}, %Paging{limit: 2, cursors: %Cursors{starting_after: request4.id}})
-      assert {[^request3, ^request2], _paging} =
-        Log.list_requests(%{}, %Paging{limit: 2, cursors: %Cursors{ending_before: request1.id}})
+      assert %Page{entries: [^request5, ^request4, ^request3, ^request2, ^request1]} =
+        Log.list_requests(%{})
+      assert %Page{entries: [^request5]} =
+        Log.list_requests(%{page_size: 1})
+      assert %Page{entries: [^request5, ^request4]} =
+        Log.list_requests(%{page_size: 2})
+      assert %Page{entries: [^request3, ^request2]} =
+        Log.list_requests(%{page_size: 2, page: 2})
     end
 
     test "paginates with filters" do
@@ -83,33 +79,22 @@ defmodule Annon.Requests.LogTest do
         api: RequestsFactory.build(:api, id: "my_api_1"), status_code: 202)
       RequestsFactory.insert(:request,
         api: RequestsFactory.build(:api, id: "my_api_1"), status_code: 201)
-      request3 =
-        RequestsFactory.insert(:request,
-          api: RequestsFactory.build(:api, id: "my_api_1"), status_code: 202)
-      request4 =
-        RequestsFactory.insert(:request,
-          api: RequestsFactory.build(:api, id: "my_api_1"), ip_address: "127.0.0.1")
+      RequestsFactory.insert(:request,
+        api: RequestsFactory.build(:api, id: "my_api_1"), status_code: 202)
+      RequestsFactory.insert(:request,
+        api: RequestsFactory.build(:api, id: "my_api_1"), ip_address: "127.0.0.1")
       request5 =
         RequestsFactory.insert(:request,
           api: RequestsFactory.build(:api, id: "my_api_1"), idempotency_key: "my_idempotency_key_one")
 
-      assert {[^request5, ^request4], _paging} =
-        Log.list_requests(
-          %{"api_ids" => "my_api_1"},
-          %Paging{limit: 2, cursors: %Cursors{ending_before: request3.id}}
-        )
+      assert %Page{entries: [^request1]} =
+        Log.list_requests(%{"api_ids" => "my_api_1", "page_size" => 2, "page" => 3})
 
-      assert {[^request5], _paging} =
-        Log.list_requests(
-          %{"idempotency_key" => "my_idempotency_key_one"},
-          %Paging{limit: 2, cursors: %Cursors{ending_before: request1.id}}
-        )
+      assert %Page{entries: [^request5]} =
+        Log.list_requests(%{"idempotency_key" => "my_idempotency_key_one", "page_size" => 1, "page" => 1})
 
-      assert {[^request3], _paging} =
-        Log.list_requests(
-          %{"status_codes" => "202"},
-          %Paging{limit: 1, cursors: %Cursors{ending_before: request1.id}}
-        )
+      assert %Page{entries: [^request1]} =
+        Log.list_requests(%{"status_codes" => "202", "page_size" => 1, "page" => 2})
     end
   end
 

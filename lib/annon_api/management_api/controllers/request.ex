@@ -10,17 +10,14 @@ defmodule Annon.ManagementAPI.Controllers.Request do
   You can find full description in [REST API documentation](http://docs.annon.apiary.io/#reference/requests).
   """
   use Annon.ManagementAPI.ControllersRouter
-  alias Annon.ManagementAPI.Pagination
   alias Annon.Requests.Log
 
   get "/" do
-    paging = Pagination.page_info_from(conn.query_params)
-
     # TODO: Do not load whole data in list
     conn
     |> Map.fetch!(:query_params)
-    |> Map.take(["idempotency_key", "api_ids", "status_codes", "ip_addresses"])
-    |> Log.list_requests(paging)
+    |> Map.take(~w(idempotency_key api_ids status_codes ip_addresses page page_size))
+    |> Log.list_requests()
     |> render_collection_with_pagination(conn)
   end
 

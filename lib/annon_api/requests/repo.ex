@@ -9,7 +9,7 @@ defmodule Annon.Requests.Repo do
   you can expect an additional read request.
   """
   use Ecto.Repo, otp_app: :annon_api
-  use Ecto.Paging.Repo
+  use Scrivener, page_size: 50
 
   @doc """
   Dynamically loads the repository configuration from the environment variables.

@@ -164,7 +164,7 @@ defmodule Annon.Acceptance.Smoke.AclTest do
     assert_logs_are_written(response)
   end
 
-  defp assert_logs_are_written(response) do
+  defp assert_logs_are_written(_response) do
     # TODO: make this rigth
     assert true
   end
