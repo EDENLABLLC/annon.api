@@ -16,6 +16,8 @@ defmodule Annon.PublicAPI.Router do
 
   use Plug.ErrorHandler
 
+  alias Plug.LoggerJSON
+
   plug :match
 
   plug Plug.Head
