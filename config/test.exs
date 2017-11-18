@@ -69,9 +69,7 @@ config :annon_api, :plugin_pipeline,
   # TODO: Improve tests to run without forced log consistency
   default_features: [:log_consistency]
 
-config :logger,
-  backends: [:console],
-  level: :error
+config :logger, :console, level: :error
 
 config :ex_unit, capture_log: true
 

@@ -32,7 +32,7 @@ defmodule Annon.Plugins.Logger do
       status_code: conn.status
     }
 
-    Logger.info(Poison.encode!(request))
+    # Logger.info(Poison.encode!(request))
 
     conn
   end
