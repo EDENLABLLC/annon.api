@@ -9,7 +9,6 @@ defmodule Annon.ReleaseTasks do
   alias Ecto.Migrator
 
   @start_apps [
-    :logger_json,
     :postgrex,
     :ecto
   ]

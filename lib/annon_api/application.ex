@@ -8,11 +8,6 @@ defmodule Annon do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    # Configure Logger severity at runtime
-    "LOG_LEVEL"
-    |> System.get_env()
-    |> configure_log_level()
-
     children = [
       supervisor(Annon.Configuration.Repo, []),
       supervisor(Annon.Requests.Repo, []),
@@ -46,14 +41,4 @@ defmodule Annon do
   def init(_key, config) do
     Resolver.resolve(config)
   end
-
-  # Configures Logger level via LOG_LEVEL environment variable.
-  @doc false
-  def configure_log_level(nil),
-    do: :ok
-  def configure_log_level(level) when level in ["debug", "info", "warn", "error"],
-    do: Logger.configure(level: String.to_atom(level))
-  def configure_log_level(level),
-    do: raise ArgumentError, "LOG_LEVEL environment should have one of 'debug', 'info', 'warn', 'error' values," <>
-                             "got: #{inspect level}"
 end

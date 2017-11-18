@@ -15,7 +15,8 @@ config :annon_api, Annon.Configuration.Repo,
   password: {:system, "DB_PASSWORD", "postgres"},
   hostname: {:system, "DB_HOST", "localhost"},
   port: {:system, :integer, "DB_PORT", 5432},
-  pool_size: 10
+  pool_size: 10,
+  loggers: [{Ecto.LoggerJSON, :log, [:info]}]
 
 config :annon_api, Annon.Requests.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -25,7 +26,8 @@ config :annon_api, Annon.Requests.Repo,
   password: {:system, "DB_PASSWORD", "postgres"},
   hostname: {:system, "DB_HOST", "localhost"},
   port: {:system, :integer, "DB_PORT", 5432},
-  pool_size: 50
+  pool_size: 50,
+  loggers: [{Ecto.LoggerJSON, :log, [:info]}]
 
 config :annon_api, :configuration_cache,
   adapter: {:system, :module, "CONFIGURATION_CACHE_ADAPTER", Annon.Configuration.CacheAdapters.ETS},
@@ -34,13 +36,7 @@ config :annon_api, :configuration_cache,
 config :annon_api, :plugin_pipeline,
   default_features: []
 
-# Do not print debug messages in production
-# and handle all other reports by Elixir Logger with JSON back-end.
-# SASL reports turned off because of their verbosity.
-config :logger,
-  level: :info,
-  # handle_sasl_reports: true,
-  handle_otp_reports: true
+config :logger, :console, format: "$message\n", level: :info, handle_otp_reports: true
 
 import_config "clustering.exs"
 import_config "monitoring.exs"

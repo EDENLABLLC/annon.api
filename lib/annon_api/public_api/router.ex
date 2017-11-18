@@ -12,6 +12,8 @@ defmodule Annon.PublicAPI.Router do
     plug Phoenix.Ecto.SQL.Sandbox
   end
 
+  require Logger
+
   use Plug.ErrorHandler
 
   plug :match
@@ -19,6 +21,7 @@ defmodule Annon.PublicAPI.Router do
   plug Plug.Head
   plug Plug.RequestId
   plug EView.Plugs.Idempotency
+  plug Plug.LoggerJSON, level: Logger.level
 
   plug Plug.Parsers, parsers: [:json],
                      pass: ["*/*"],
@@ -35,7 +38,10 @@ defmodule Annon.PublicAPI.Router do
     Annon.Helpers.Response.send_error(conn, :not_found)
   end
 
-  def handle_errors(%Plug.Conn{halted: false} = conn, error) do
+  defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stacktrace} = error) do
+    LoggerJSON.log_error(kind, reason, stacktrace)
     Annon.Helpers.Response.send_error(conn, error)
   end
+
+  defp handle_errors(_, _), do: nil
 end
