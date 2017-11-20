@@ -1,7 +1,8 @@
-Change log for versions 0.12.10 - 0.12.40
+Change log for versions 0.12.10 - 0.12.41
 
 **Patches and bug fixes**:
 
+return all apis by default
 Add missed alias
 New logger
 drop ecto paging
@@ -48,6 +49,3 @@ Update .gitmodules (#13)
 Syntax fix
 Fix for filter_map deprecation warnings in tests
 skip paging test
-fail build when commit messages in PR doesn't contains release tag
-Merge pull request #6 from edenlabllc/EHealth-214
-EHealth-214: proxy api-client header
