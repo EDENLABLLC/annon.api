@@ -26,6 +26,7 @@ defmodule Annon.Configuration.API do
 
   """
   def list_apis(params \\ %{}) do
+    params = if Map.has_key?(params, "page_size"), do: params, else: Map.put(params, "page_size", 1000)
     APISchema
     |> maybe_filter_name(params)
     |> Repo.paginate(params)

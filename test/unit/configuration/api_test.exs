@@ -53,9 +53,9 @@ defmodule Annon.Configuration.APITest do
       assert %Page{entries: [^api1]} =
         API.list_apis(%{"page_size" => 1})
       assert %Page{entries: [^api1, ^api2]} =
-        API.list_apis(%{page_size: 2})
+        API.list_apis(%{"page_size" => 2})
       assert %Page{entries: [^api3, ^api4]} =
-        API.list_apis(%{page_size: 2, page: 2})
+        API.list_apis(%{"page_size" => 2, "page" => 2})
     end
 
     test "paginates with filters" do
