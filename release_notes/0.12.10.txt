@@ -1,7 +1,8 @@
-Change log for versions 0.12.10 - 0.12.41
+Change log for versions 0.12.10 - 0.12.42
 
 **Patches and bug fixes**:
 
+Added Tap
 return all apis by default
 Add missed alias
 New logger
@@ -35,7 +36,6 @@ Fix UTC timezone issue with timestamptz
 - fix travis.yml
 - rename Nebo15 to edenlabllc
 - revert mix.lock
-- updated deps
 
 **Other**:
 
