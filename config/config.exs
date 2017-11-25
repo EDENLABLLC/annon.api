@@ -36,7 +36,7 @@ config :annon_api, :configuration_cache,
 config :annon_api, :plugin_pipeline,
   default_features: []
 
-config :logger, :console, format: "$message\n", level: :info, handle_otp_reports: true
+config :logger, format: "$message\n", level: :debug, handle_otp_reports: true
 
 import_config "clustering.exs"
 import_config "monitoring.exs"
