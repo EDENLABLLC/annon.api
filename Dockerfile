@@ -1,75 +1,40 @@
-FROM nebo15/alpine-elixir:1.5.2
+FROM edenlabllc/elixir:1.5.2 as builder
 
-# Maintainers
-MAINTAINER Nebo#15 support@nebo15.com
+ARG APP_NAME
+ARG APP_VERSION
 
-# Configure environment variables and other settings
-ENV TERM=xterm \
-    MIX_ENV=prod \
-    APP_NAME=annon_api \
-    GATEWAY_PUBLIC_PORT=4000 \
-    GATEWAY_PUBLIC_HTTPS_PORT=4000 \
-    GATEWAY_MANAGEMENT_PORT=4001 \
-    GATEWAY_PRIVATE_PORT=4443
+ADD . /app
 
-WORKDIR ${HOME}
+WORKDIR /app
 
-# Required in elixir_make
-RUN apk add --update --no-cache make
+ENV MIX_ENV=prod
 
-# Install and compile project dependencies
-COPY mix.* ./
-COPY config ./config
-RUN mix do deps.get, deps.compile
+RUN mix do \
+      local.hex --force, \
+      local.rebar --force, \
+      deps.get, \
+      deps.compile, \
+      release
 
-# Add project sources
-COPY . .
+FROM alpine:edge
 
-# Compile project for Erlang VM
-RUN mix compile
-RUN mix release --verbose
+ARG APP_NAME
+ARG APP_VERSION
 
-# Move release to /opt/$APP_NAME
-RUN \
-    mkdir -p $HOME/priv && \
-    mkdir -p /opt/$APP_NAME/log && \
-    mkdir -p /var/log && \
-    mkdir -p /opt/$APP_NAME/priv && \
-    mkdir -p /opt/$APP_NAME/hooks && \
-    mkdir -p /opt/$APP_NAME/uploads && \
-    cp -R $HOME/priv /opt/$APP_NAME/ && \
-    cp -R $HOME/bin/hooks /opt/$APP_NAME/ && \
-    APP_TARBALL=$(find $HOME/_build/$MIX_ENV/rel/$APP_NAME/releases -maxdepth 2 -name ${APP_NAME}.tar.gz) && \
-    cp $APP_TARBALL /opt/$APP_NAME/ && \
-    cd /opt/$APP_NAME && \
-    tar -xzf $APP_NAME.tar.gz && \
-    rm $APP_NAME.tar.gz && \
-    rm -rf /opt/app/* && \
-    chmod -R 777 $HOME && \
-    chmod -R 777 /opt/$APP_NAME && \
-    chmod -R 777 /var/log
+RUN apk add --no-cache \
+      ncurses-libs \
+      zlib \
+      ca-certificates \
+      openssl \
+      bash
 
-RUN apk del --no-cache make
+WORKDIR /app
 
-# Change user to "default"
-USER default
+COPY --from=builder /app/_build/prod/rel/${APP_NAME}/releases/${APP_VERSION}/${APP_NAME}.tar.gz /app
 
-# Allow to read ENV vars for mix configs
-ENV REPLACE_OS_VARS=true
+RUN tar -xzf ${APP_NAME}.tar.gz; rm ${APP_NAME}.tar.gz
 
-# Exposes this port from the docker container to the host machine
-EXPOSE ${GATEWAY_PUBLIC_PORT} ${GATEWAY_PUBLIC_HTTPS_PORT} ${GATEWAY_MANAGEMENT_PORT} ${GATEWAY_PRIVATE_PORT}
+ENV REPLACE_OS_VARS=true \
+    APP=${APP_NAME}
 
-# Change workdir to a released directory
-WORKDIR /opt
-
-# Pre-run hook that allows you to add initialization scripts.
-# All Docker hooks should be located in bin/hooks directory.
-RUN $APP_NAME/hooks/pre-run.sh
-
-# The command to run when this image starts up
-#  You can run it in one of the following ways:
-#    Interactive: annon_api/bin/annon_api console
-#    Foreground: annon_api/bin/annon_api foreground
-#    Daemon: annon_api/bin/annon_api start
-CMD $APP_NAME/bin/$APP_NAME foreground
+CMD ./bin/${APP} foreground
