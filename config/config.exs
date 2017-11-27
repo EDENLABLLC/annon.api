@@ -36,7 +36,11 @@ config :annon_api, :configuration_cache,
 config :annon_api, :plugin_pipeline,
   default_features: []
 
-config :logger, format: "$message\n", level: :debug, handle_otp_reports: true
+# Configures Elixir's Logger
+config :logger, :console,
+  format: "$message\n",
+  handle_otp_reports: true,
+  level: :info
 
 import_config "clustering.exs"
 import_config "monitoring.exs"
