@@ -23,11 +23,11 @@ defmodule Annon.Plugins.ACL do
          :ok <- validate_broker_scope(rule, broker_scope) do
       conn
     else
-      {:error, :scope_not_set} -> send_forbidden(conn)
+      {:error, :scope_not_set} -> send_access_denied(conn)
       {:error, :no_matching_rule} ->
         Logger.debug(fn -> "ACL: No matching rule was found for path #{api_relative_path}." end)
-        send_forbidden(conn)
-      {:error, :forbidden, missing_scopes} -> send_forbidden(conn, missing_scopes)
+        send_access_denied(conn)
+      {:error, :access_denied, missing_scopes} -> send_access_denied(conn, missing_scopes)
     end
   end
 
@@ -56,12 +56,12 @@ defmodule Annon.Plugins.ACL do
   defp validate_broker_scope(scope, broker_scope) do
     case validate_scope(scope, broker_scope) do
       :ok -> :ok
-      {:error, :forbidden, _} -> {:error, :forbidden, :broker}
+      {:error, :access_denied, _} -> {:error, :access_denied, :broker}
     end
   end
 
   defp validate_scope(%{"scopes" => required_scopes}, []),
-    do: {:error, :forbidden, required_scopes}
+    do: {:error, :access_denied, required_scopes}
   defp validate_scope(%{"scopes" => required_scopes}, scope) do
     consumer_scope = split_scope(scope)
 
@@ -72,15 +72,15 @@ defmodule Annon.Plugins.ACL do
 
     case missing_scope do
       [] -> :ok
-      missing_scope -> {:error, :forbidden, missing_scope}
+      missing_scope -> {:error, :access_denied, missing_scope}
     end
   end
 
   defp split_scope(scope) when is_binary(scope),
     do: String.split(scope, " ", trim: true)
 
-  defp send_forbidden(conn, missing_scopes \\ nil) do
-    "403.json"
+  defp send_access_denied(conn, missing_scopes \\ nil) do
+    "401.json"
     |> ErrorView.render(%{
       message: get_message(missing_scopes),
       invalid: [%{
@@ -89,7 +89,7 @@ defmodule Annon.Plugins.ACL do
         rules: get_rules(missing_scopes)
       }]
     })
-    |> Response.send(conn, 403)
+    |> Response.send(conn, 401)
     |> Response.halt()
   end
 

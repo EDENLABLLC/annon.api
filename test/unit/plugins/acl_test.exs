@@ -81,36 +81,36 @@ defmodule Annon.Plugins.ACLTest do
       }
     end
 
-    test "returns forbidden when scope is not set", %{conn: conn, api: api} do
+    test "returns access_denied when scope is not set", %{conn: conn, api: api} do
       acl_plugin = ConfigurationFactory.build(:acl_plugin)
       settings = acl_plugin.settings
 
       assert %{
         "error" => %{
           "message" => "You are not authorized or your token can not be resolved to scope",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
-    test "returns forbidden when scope does not match for path", %{conn: conn, api: api} do
+    test "returns access_denied when scope does not match for path", %{conn: conn, api: api} do
       acl_plugin = ConfigurationFactory.build(:acl_plugin)
       settings = acl_plugin.settings
 
       assert %{
         "error" => %{
           "message" => "Your scope does not allow to access this resource. Missing allowances: some_resource:read",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, %Consumer{id: "bob", scope: "apis:list"})
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
-    test "returns forbidden when no rule is set for path", %{conn: conn, api: api} do
+    test "returns access_denied when no rule is set for path", %{conn: conn, api: api} do
       settings = %{
         "rules" => [
           %{
@@ -124,15 +124,15 @@ defmodule Annon.Plugins.ACLTest do
       assert %{
         "error" => %{
           "message" => "You are not authorized or your token can not be resolved to scope",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, %Consumer{id: "bob", scope: "apis:list"})
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
-    test "returns forbidden when no some allowances are missing", %{conn: conn, api: api} do
+    test "returns access_denied when no some allowances are missing", %{conn: conn, api: api} do
       settings = %{
         "rules" => [
           %{
@@ -146,15 +146,15 @@ defmodule Annon.Plugins.ACLTest do
       assert %{
         "error" => %{
           "message" => "Your scope does not allow to access this resource. Missing allowances: some_resource:access",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, %Consumer{id: "bob", scope: "some_resource:read"})
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
-    test "returns forbidden when consumer has empty scope", %{conn: conn, api: api} do
+    test "returns access_denied when consumer has empty scope", %{conn: conn, api: api} do
       settings = %{
         "rules" => [
           %{
@@ -168,15 +168,15 @@ defmodule Annon.Plugins.ACLTest do
       assert %{
         "error" => %{
           "message" => "Your scope does not allow to access this resource. Missing allowances: some_resource:read",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, %Consumer{id: "bob", scope: ""})
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
-    test "returns forbidden when consumer has invalid broker scope", %{conn: conn, api: api} do
+    test "returns access_denied when consumer has invalid broker scope", %{conn: conn, api: api} do
       settings = %{
         "rules" => [
           %{
@@ -196,15 +196,15 @@ defmodule Annon.Plugins.ACLTest do
       assert %{
         "error" => %{
           "message" => "Scope is not allowed by broker",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, consumer)
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
-    test "returns forbidden when broker scope is empty", %{conn: conn, api: api} do
+    test "returns access_denied when broker scope is empty", %{conn: conn, api: api} do
       settings = %{
         "rules" => [
           %{
@@ -224,12 +224,12 @@ defmodule Annon.Plugins.ACLTest do
       assert %{
         "error" => %{
           "message" => "Scope is not allowed by broker",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, consumer)
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
     test "uses first matched rule", %{conn: conn, api: api} do
@@ -252,12 +252,12 @@ defmodule Annon.Plugins.ACLTest do
         "error" => %{
           "message" => "Your scope does not allow to access this resource. " <>
                        "Missing allowances: some_resource:read, some_resource:access",
-          "type" => "forbidden"
+          "type" => "access_denied"
         }
       } = conn
       |> Conn.assign(:consumer, %Consumer{id: "bob", scope: "other_scope:read"})
       |> ACL.execute(%{api: api}, settings)
-      |> json_response(403)
+      |> json_response(401)
     end
 
     test "filters rules by method", %{conn: conn, api: api} do
