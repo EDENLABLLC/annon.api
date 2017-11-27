@@ -106,8 +106,8 @@ defmodule Annon.Acceptance.Smoke.AclTest do
 
     assert "Your scope does not allow to access this resource. Missing allowances: httpbin:write"
       == response["error"]["message"]
-    assert "forbidden" == response["error"]["type"]
-    assert 403 == response["meta"]["code"]
+    assert "access_denied" == response["error"]["type"]
+    assert 401 == response["meta"]["code"]
 
     assert_logs_are_written(response)
   end
@@ -132,8 +132,8 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Poison.decode!
 
     assert "Scope is not allowed by broker" == response["error"]["message"]
-    assert "forbidden" == response["error"]["type"]
-    assert 403 == response["meta"]["code"]
+    assert "access_denied" == response["error"]["type"]
+    assert 401 == response["meta"]["code"]
 
     assert_logs_are_written(response)
   end
@@ -158,8 +158,8 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Poison.decode!
 
     assert "Scope is not allowed by broker" == response["error"]["message"]
-    assert "forbidden" == response["error"]["type"]
-    assert 403 == response["meta"]["code"]
+    assert "access_denied" == response["error"]["type"]
+    assert 401 == response["meta"]["code"]
 
     assert_logs_are_written(response)
   end
