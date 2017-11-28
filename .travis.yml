@@ -16,7 +16,7 @@ addons:
 elixir:
   - 1.5.2
 otp_release:
-  - 20.1.2
+  - 20.1
 notifications:
   slack:
     rooms:

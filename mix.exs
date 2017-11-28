@@ -8,7 +8,7 @@ defmodule Annon.Mixfile do
      description: "Configurable API gateway that acts as a reverse proxy with a plugin system.",
      package: package(),
      version: @version,
-     elixir: "~> 1.4",
+     elixir: "~> 1.5",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -72,8 +72,6 @@ defmodule Annon.Mixfile do
      {:tap, "~> 0.1.5"},
      {:ex_machina, ">= 1.0.0", only: [:dev, :test]},
      {:dogma, ">= 0.0.0", only: [:dev, :test]},
-     {:benchfella, "~> 0.3", only: [:dev, :test]},
-     {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
      {:excoveralls, ">= 0.0.0", only: [:dev, :test]},
      {:credo, ">= 0.0.0", only: [:dev, :test]},
     ]
