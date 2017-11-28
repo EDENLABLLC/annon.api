@@ -1,0 +1,7 @@
+Change log for versions 0.13.0 - 0.13.1
+
+**Patches and bug fixes**:
+
+Update mix & travis
+
+
