@@ -25,9 +25,7 @@ defmodule Annon.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      extra_applications: [:logger, :confex, :cowboy, :ssl, :plug, :postgrex, :ecto, :joken,
-                           :nex_json_schema, :poison, :httpoison, :skycluster, :eview, :dogstat,
-                           :scrivener_ecto, :runtime_tools, :tap],
+      extra_applications: [:logger, :ssl, :runtime_tools],
       mod: {Annon, []}
     ]
   end
