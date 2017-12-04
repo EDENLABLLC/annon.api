@@ -1,0 +1,49 @@
+Change log for versions 0.12.19 - 0.12.54
+
+**Patches and bug fixes**:
+
+extra_applications
+bump version to 0.12.54 # sorry guys, it's fucking semver scripts
+bump version to 0.12.51
+bump version to 0.12.50
+map 422 response message from Mithril
+build application on Travis #2
+build application on Travis
+rename branch for travis
+demo branch
+Cleanup logging
+New base container
+Make sure 500s make it into logs
+Added Tap
+return all apis by default
+Add missed alias
+New logger
+drop ecto paging
+Remove logger_json
+Better indicate the fact...
+Do not double-encode body params
+Do not log response
+remove wobserver
+add wobserver
+add xprof
+Log json strings
+Fix deploy key
+create basic connection pools based on settings hosts
+Turn off logging
+: CI update: check for versioning error (#15)
+CI submodule updated
+Git submodules and Travis scripts updated
+submodule re-created
+Travis scripts update
+fix for the Travis script
+CI & Travis scripts updated
+
+**Other**:
+
+(cherry picked from commit b7ee2eb)
+(cherry picked from commit e9e8274)
+Mark more tests as pending
+Start fixing tests...
+Return conn
+CI Submodule updated
+Submodule removed
