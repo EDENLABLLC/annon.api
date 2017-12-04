@@ -30,6 +30,16 @@ defmodule Annon.Plugins.Auth.ThirdPartyResolverTest do
       == ThirdPartyResolver.call_third_party_resolver("http://httpbin.org/status/418")
   end
 
+  test "returns 422 status codes" do
+    assert {:error, "API-KEY header is invalid."}
+      == ThirdPartyResolver.parse_error_response(422, ~S({"error": {"message": "API-KEY header is invalid."}}))
+  end
+
+  test "returns 400 status codes" do
+    assert {:error, :invalid_response}
+      == ThirdPartyResolver.parse_error_response(400, "Invalid JSON")
+  end
+
   test "returns error when third party is not available" do
     assert {:error, :unavailable}
       == ThirdPartyResolver.call_third_party_resolver("http://localhost:31001/")

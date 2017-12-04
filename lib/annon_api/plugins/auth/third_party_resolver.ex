@@ -23,20 +23,23 @@ defmodule Annon.Plugins.Auth.ThirdPartyResolver do
           "Auth - Third party resolver: HTTP GET to #{url} received HTTP #{to_string(status_code)} code " <>
           "with body #{inspect body}."
         end)
-        case status_code do
-          422 ->
-            error = body |> Poison.decode!() |> Map.get("error") |> Map.values |> List.first()
-            {:error, error}
-          _ ->
-            {:error, :invalid_response}
-        end
-
+        parse_error_response(status_code, body)
       {:error, reason} ->
         Logger.error(fn ->
           "Auth - Third party resolver: can not decode third party response, reason: #{inspect reason}."
         end)
         {:error, :unavailable}
     end
+  end
+
+  def parse_error_response(422, body) when is_binary(body) do
+    parse_error_response(422, Poison.decode!(body))
+  end
+  def parse_error_response(422, %{"error" => %{"message" => message}}) do
+    {:error, message}
+  end
+  def parse_error_response(_code, _body) do
+    {:error, :invalid_response}
   end
 
   defp parse_success_response(%{"user_id" => consumer_id, "details" => %{"scope" => consumer_scope} = metadata}),
