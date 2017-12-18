@@ -23,18 +23,18 @@ defmodule Annon.Plugins.ACL do
          :ok <- validate_broker_scope(rule, broker_scope) do
       conn
     else
-      {:error, :scope_not_set} -> send_access_denied(conn)
+      {:error, :scope_not_set} -> send_forbidden(conn)
       {:error, :no_matching_rule} ->
         Logger.debug(fn -> "ACL: No matching rule was found for path #{api_relative_path}." end)
-        send_access_denied(conn)
-      {:error, :access_denied, missing_scopes} -> send_access_denied(conn, missing_scopes)
+        send_forbidden(conn)
+      {:error, :forbidden, missing_scopes} -> send_forbidden(conn, missing_scopes)
     end
   end
 
   defp fetch_scope(%Conn{assigns: %{consumer: %Consumer{scope: scope, metadata: meta}}}),
-    do: {:ok, scope, Map.get(meta, "broker_scope")}
+       do: {:ok, scope, Map.get(meta, "broker_scope")}
   defp fetch_scope(_),
-    do: {:error, :scope_not_set}
+       do: {:error, :scope_not_set}
 
   defp find_rule(rules, request_method, api_relative_path) do
     rule =
@@ -52,16 +52,16 @@ defmodule Annon.Plugins.ACL do
 
   # broker scope not required
   defp validate_broker_scope(_scope, nil),
-   do: :ok
+       do: :ok
   defp validate_broker_scope(scope, broker_scope) do
     case validate_scope(scope, broker_scope) do
       :ok -> :ok
-      {:error, :access_denied, _} -> {:error, :access_denied, :broker}
+      {:error, :forbidden, _} -> {:error, :forbidden, :broker}
     end
   end
 
   defp validate_scope(%{"scopes" => required_scopes}, []),
-    do: {:error, :access_denied, required_scopes}
+       do: {:error, :forbidden, required_scopes}
   defp validate_scope(%{"scopes" => required_scopes}, scope) do
     consumer_scope = split_scope(scope)
 
@@ -72,15 +72,15 @@ defmodule Annon.Plugins.ACL do
 
     case missing_scope do
       [] -> :ok
-      missing_scope -> {:error, :access_denied, missing_scope}
+      missing_scope -> {:error, :forbidden, missing_scope}
     end
   end
 
   defp split_scope(scope) when is_binary(scope),
-    do: String.split(scope, " ", trim: true)
+       do: String.split(scope, " ", trim: true)
 
-  defp send_access_denied(conn, missing_scopes \\ nil) do
-    "401.json"
+  defp send_forbidden(conn, missing_scopes \\ nil) do
+    "403.json"
     |> ErrorView.render(%{
       message: get_message(missing_scopes),
       invalid: [%{
@@ -89,12 +89,12 @@ defmodule Annon.Plugins.ACL do
         rules: get_rules(missing_scopes)
       }]
     })
-    |> Response.send(conn, 401)
+    |> Response.send(conn, 403)
     |> Response.halt()
   end
 
   defp get_message(nil),
-    do: "You are not authorized or your token can not be resolved to scope"
+       do: "You are not authorized or your token can not be resolved to scope"
   defp get_message(missing_scopes) when is_list(missing_scopes) do
     missing_scopes = Enum.join(missing_scopes, ", ")
     "Your scope does not allow to access this resource. Missing allowances: #{missing_scopes}"
@@ -104,7 +104,7 @@ defmodule Annon.Plugins.ACL do
   end
 
   defp get_rules(nil),
-    do: []
+       do: []
   defp get_rules(missing_scopes),
-    do: %{scopes: missing_scopes}
+       do: %{scopes: missing_scopes}
 end

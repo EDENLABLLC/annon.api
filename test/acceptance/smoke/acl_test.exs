@@ -5,7 +5,7 @@ defmodule Annon.Acceptance.Smoke.AclTest do
   setup do
     api_path = "/httpbin"
     api = :api
-    |> build_factory_params(%{
+          |> build_factory_params(%{
       name: "An HTTPBin service endpoint",
       request: %{
         methods: ["GET", "POST"],
@@ -15,13 +15,13 @@ defmodule Annon.Acceptance.Smoke.AclTest do
         path: api_path,
       }
     })
-    |> create_api()
-    |> get_body()
+          |> create_api()
+          |> get_body()
 
     api_id = get_in(api, ["data", "id"])
 
     proxy_plugin = :proxy_plugin
-    |> build_factory_params(%{settings: %{
+                   |> build_factory_params(%{settings: %{
       scheme: "http",
       host: "httpbin.org",
       port: 80,
@@ -35,7 +35,7 @@ defmodule Annon.Acceptance.Smoke.AclTest do
     |> assert_status(201)
 
     acl_plugin = :acl_plugin
-    |> build_factory_params(%{settings: %{
+                 |> build_factory_params(%{settings: %{
       rules: [
         %{methods: ["GET"], path: ".*", scopes: ["httpbin:read"]},
         %{methods: ["PUT", "POST", "DELETE"], path: ".*", scopes: ["httpbin:write"]},
@@ -48,7 +48,7 @@ defmodule Annon.Acceptance.Smoke.AclTest do
     |> assert_status(201)
 
     auth_plugin = :auth_plugin_with_jwt
-    |> build_factory_params()
+                  |> build_factory_params()
 
     secret = Base.decode64!(auth_plugin.settings["secret"])
 
@@ -104,10 +104,10 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Map.get(:body)
       |> Poison.decode!
 
-    assert "Your scope does not allow to access this resource. Missing allowances: httpbin:write"
-      == response["error"]["message"]
-    assert "access_denied" == response["error"]["type"]
-    assert 401 == response["meta"]["code"]
+    msg = "Your scope does not allow to access this resource. Missing allowances: httpbin:write"
+    assert msg == response["error"]["message"]
+    assert "forbidden" == response["error"]["type"]
+    assert 403 == response["meta"]["code"]
 
     assert_logs_are_written(response)
   end
@@ -132,8 +132,8 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Poison.decode!
 
     assert "Scope is not allowed by broker" == response["error"]["message"]
-    assert "access_denied" == response["error"]["type"]
-    assert 401 == response["meta"]["code"]
+    assert "forbidden" == response["error"]["type"]
+    assert 403 == response["meta"]["code"]
 
     assert_logs_are_written(response)
   end
@@ -158,8 +158,8 @@ defmodule Annon.Acceptance.Smoke.AclTest do
       |> Poison.decode!
 
     assert "Scope is not allowed by broker" == response["error"]["message"]
-    assert "access_denied" == response["error"]["type"]
-    assert 401 == response["meta"]["code"]
+    assert "forbidden" == response["error"]["type"]
+    assert 403 == response["meta"]["code"]
 
     assert_logs_are_written(response)
   end
